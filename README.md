@@ -9,6 +9,9 @@ Speech-to-text and the drafting model run on your own hardware, identifiers such
 card numbers are replaced by tokens before any model sees the text, and every request Praktika
 makes while processing a meeting is checked against an allow-list of hosts you configure.
 
+![The review page for a synthetic meeting: reviewer flags at the top, then the draft minutes, each
+decision and action citing the transcript line it came from, beside the transcript itself.](docs/images/review-page.png)
+
 **Requirements:** macOS on Apple silicon, or Linux on x86_64 or aarch64 (with an NVIDIA GPU for
 real use); Python 3.12, which uv installs for you; no Windows. With the default drafting model a
 Mac needs 24 GB of memory to run comfortably. Praktika runs from a git checkout, installed in
@@ -19,6 +22,47 @@ This repository, `praktika_osm`, is the open-source release. Version 0.1.0 is pi
 controls are in code and tested, but the tool has not been validated on real meetings at scale.
 Read [what is built and what is not](#what-is-built-and-what-is-not) and
 [docs/LIMITATIONS.md](docs/LIMITATIONS.md) before relying on it.
+
+## What you get
+
+The screenshot above and the excerpt below come from
+[docs/examples/demo_meeting.vtt](docs/examples/demo_meeting.vtt), a five-minute synthetic Teams
+transcript of a fictional working group, drafted by `qwen2.5:14b` on Ollama and then approved. The
+chair first proposes launching on the ninth of November and corrects it to the sixteenth a few
+lines later; the minutes carry the corrected date, with the quote that corrected it. Every item
+cites the segment, time and speaker it came from:
+
+```markdown
+## Decisions
+
+- **D1** (agreed_in_principle, decided by Committee): The pilot runs in the Riverside and Old Town branches only.
+  - [S0009 00:02:39–00:02:58 Hannah Clarke] “Then that is agreed: the pilot runs in the Riverside and Old Town branches only.”
+- **D2** (agreed_in_principle, decided by Committee): The pilot launches on Monday the sixteenth of November.
+  - [S0011 00:03:17–00:03:29 Hannah Clarke] “Let us correct that: the pilot launches on Monday the sixteenth of November, not the ninth.”
+- **D3** (agreed_in_principle, decided by Committee): The marketing campaign is deferred to January.
+  - [S0018 00:05:13–00:05:27 Hannah Clarke] “So the marketing campaign is deferred to January.”
+
+## Actions
+
+- **A1** I will have the accessibility fixes finished by Friday the sixth of November. — owner: Marco Silva (explicit); due: by Friday the sixth of November
+  - [S0005 00:01:32–00:01:44 Marco Silva] “I will have the accessibility fixes finished by Friday the sixth of November.”
+- **A2** I will complete the compliance review of the consent wording by Friday the thirtieth of October. — owner: Priya Raman (explicit); due: by Friday the thirtieth of October
+  - [S0006 00:01:45–00:02:07 Priya Raman] “I will complete the compliance review of the consent wording by Friday the thirtieth of October.”
+- **A3** I will brief the staff in both branches before launch, by Thursday the twelfth of November, and share the support guide with them. — owner: Daniel Okafor (explicit); due: by Thursday the twelfth of November
+  - [S0012 00:03:30–00:03:49 Daniel Okafor] “I will brief the staff in both branches before launch, by Thursday the twelfth of November, and share the support guide with them.”
+```
+
+To reproduce it, set up [Quick start A](#quick-start-a-an-apple-silicon-mac) (Ollama with
+`qwen2.5:14b`), then ingest the demo transcript and open the review URL that the command prints:
+
+```bash
+uv run praktika ingest docs/examples/demo_meeting.vtt --title "Customer onboarding working group" \
+    --type general --class internal \
+    --notified --no-objections --method chat --teams-transcription-started \
+    --purpose "Demonstration with a synthetic meeting" --ack-all-scope
+```
+
+A language model's wording differs from run to run; the citations are checked every time.
 
 ## Why
 

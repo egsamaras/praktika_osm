@@ -85,6 +85,30 @@ def test_markdown_sections_in_order(tmp_settings: Settings) -> None:
     assert "sha256 " + "a" * 64 in text and "Rendered at: " + NOW.isoformat() in text
 
 
+def test_every_citation_is_on_its_own_line(tmp_settings: Settings) -> None:
+    """A topic with several citations, a question raised by someone and a risk with a mitigation
+    each put every citation on a line of its own (the templates run with trim_blocks, which once
+    ran them together)."""
+    from praktika.models import OpenQuestion, Risk, TopicSummary
+
+    t = make_transcript("en")
+    minutes = base_minutes(
+        topics=[TopicSummary(title="Pilot", summary="Agreed.", key_points=["x"],
+                             refs=[seg_ref(t, "S0001"), seg_ref(t, "S0002"), seg_ref(t, "S0003")])],
+        open_questions=[OpenQuestion(id="Q1", question="Keep audio?", raised_by="F. Khalid",
+                                     owner=None, refs=[seg_ref(t, "S0004")])],
+        risks=[Risk(id="R1", description="Names", severity="medium", owner=None,
+                    mitigation="redact", refs=[seg_ref(t, "S0005")])],
+    )  # fmt: skip
+    text = render_markdown(minutes, base_meeting(), t, settings=tmp_settings, now=NOW)
+    lines = text.splitlines()
+    for seg in ("S0001", "S0002", "S0003", "S0004", "S0005"):
+        cited = [line for line in lines if f"[{seg} " in line]
+        assert cited and all(line.startswith("  - [") for line in cited), (seg, cited)
+    assert any(line.endswith("(raised by F. Khalid)") for line in lines)
+    assert any(line.endswith("mitigation: redact") for line in lines)
+
+
 def test_draft_watermark_present_absent(tmp_settings: Settings) -> None:
     draft = render_markdown(base_minutes(), base_meeting(), None, settings=tmp_settings)
     assert draft.count(BANNER_DRAFT) == 2  # top banner and footer

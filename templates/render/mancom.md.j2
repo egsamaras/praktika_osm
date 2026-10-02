@@ -1,9 +1,9 @@
+{# One line per citation. The engine runs with trim_blocks, so a line that ends in a block tag
+   loses its line break: each citation after the first starts with an explicit one instead. #}
 {% macro cite(refs) %}
 {% for r in refs %}
-  - [{{ r.id }} {{ r.time }} {{ r.speaker }}] {% if r.arabic %}<bdi>“{{ r.quote }}”</bdi>{% else %}“{{ r.quote }}”{% endif %}
-{% if r.gloss %}
-    - Gloss (EN): {{ r.gloss }}
-{% endif %}
+{% if not loop.first %}{{ "\n" }}{% endif %}  - [{{ r.id }} {{ r.time }} {{ r.speaker }}] {% if r.arabic %}<bdi>“{{ r.quote }}”</bdi>{% else %}“{{ r.quote }}”{% endif %}
+{% if r.gloss %}{{ "\n" }}    - Gloss (EN): {{ r.gloss }}{% endif %}
 {% endfor %}
 {% endmacro %}
 **Classification: {{ classification }}**
@@ -91,7 +91,7 @@ _No actions were recorded._
 ## Open questions
 
 {% for q in questions %}
-- **{{ q.id }}** {{ q.question }}{% if q.raised_by %} (raised by {{ q.raised_by }}){% endif %}
+- **{{ q.id }}** {{ q.question }}{% if q.raised_by %} (raised by {{ q.raised_by }}){% endif %}{{ "" }}
 {{ cite(q.refs) }}
 {% else %}
 _None._
@@ -100,7 +100,7 @@ _None._
 ## Risks
 
 {% for r in risks %}
-- **{{ r.id }}** [{{ r.severity }}] {{ r.description }}{% if r.mitigation %} — mitigation: {{ r.mitigation }}{% endif %}
+- **{{ r.id }}** [{{ r.severity }}] {{ r.description }}{% if r.mitigation %} — mitigation: {{ r.mitigation }}{% endif %}{{ "" }}
 {{ cite(r.refs) }}
 {% else %}
 _None._

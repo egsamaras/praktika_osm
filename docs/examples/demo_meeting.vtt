@@ -1,0 +1,77 @@
+WEBVTT
+
+cue-001
+00:00:01.000 --> 00:00:19.500
+<v Hannah Clarke>Good morning, everyone. This is the customer onboarding working group. A reminder that Teams is transcribing and our notetaker will draft the minutes; the notice is in the chat. If anyone objects, say so now.</v>
+
+cue-002
+00:00:20.200 --> 00:00:31.800
+<v Hannah Clarke>No objections, thank you. Three items today: the digital account-opening form, the branch pilot plan, and the marketing campaign. Daniel, over to you for the form.</v>
+
+cue-003
+00:00:32.500 --> 00:00:58.900
+<v Daniel Okafor>Thanks, Hannah. The new form is feature-complete. In testing, a new customer finished onboarding in about ten minutes, against twenty-five minutes on the paper process today. The build cost so far is one hundred and twenty thousand dollars, which is inside the approved budget.</v>
+
+cue-004
+00:00:59.600 --> 00:01:18.300
+<v Marco Silva>Two things are still open on our side. The accessibility audit found contrast and screen-reader issues on the identity step, and we need to finish the fallback for when the identity verification provider is down.</v>
+
+cue-005
+00:01:19.000 --> 00:01:31.700
+<v Hannah Clarke>Marco, when can the accessibility fixes be done?</v>
+
+cue-006
+00:01:32.400 --> 00:01:44.900
+<v Marco Silva>I will have the accessibility fixes finished by Friday the sixth of November.</v>
+
+cue-007
+00:01:45.600 --> 00:02:07.200
+<v Priya Raman>From compliance, the consent and data-use wording on the first screen still needs our review. I will complete the compliance review of the consent wording by Friday the thirtieth of October.</v>
+
+cue-008
+00:02:08.000 --> 00:02:27.600
+<v Hannah Clarke>Good. Item two, the branch pilot. The proposal is to run the form in two branches, Riverside and Old Town, before any wider rollout. Any objections to two branches?</v>
+
+cue-009
+00:02:28.300 --> 00:02:38.900
+<v Daniel Okafor>None from product. Two branches gives us enough volume without stretching the support team.</v>
+
+cue-010
+00:02:39.600 --> 00:02:58.100
+<v Hannah Clarke>Then that is agreed: the pilot runs in the Riverside and Old Town branches only. On timing, I suggest we launch on Monday the ninth of November.</v>
+
+cue-011
+00:02:58.800 --> 00:03:16.400
+<v Marco Silva>Sorry, Hannah, the ninth falls inside the platform code freeze. The first day we can release is Monday the sixteenth of November.</v>
+
+cue-012
+00:03:17.100 --> 00:03:29.800
+<v Hannah Clarke>Fair point. Let us correct that: the pilot launches on Monday the sixteenth of November, not the ninth.</v>
+
+cue-013
+00:03:30.500 --> 00:03:49.000
+<v Daniel Okafor>I will brief the staff in both branches before launch, by Thursday the twelfth of November, and share the support guide with them.</v>
+
+cue-014
+00:03:49.700 --> 00:04:10.300
+<v Priya Raman>One risk to record. If the identity verification provider is unavailable, customers would be stuck halfway through. Until Marco's fallback is live, branch staff must be able to complete those cases manually.</v>
+
+cue-015
+00:04:11.000 --> 00:04:28.600
+<v Hannah Clarke>Agreed, let us record that as a risk, with Marco owning the fallback. An open question I would like us to think about: should the mobile app be part of phase one, or only the web form?</v>
+
+cue-016
+00:04:29.300 --> 00:04:41.900
+<v Daniel Okafor>I would rather not decide that today. We need the pilot numbers first.</v>
+
+cue-017
+00:04:42.600 --> 00:05:03.100
+<v Hannah Clarke>Then it stays open. Item three, the marketing campaign. Given the new launch date, I propose we defer the campaign to January, once the pilot results are in.</v>
+
+cue-018
+00:05:03.800 --> 00:05:12.400
+<v Priya Raman>That works for compliance; it gives us time to review the campaign copy.</v>
+
+cue-019
+00:05:13.100 --> 00:05:27.700
+<v Hannah Clarke>So the marketing campaign is deferred to January. Anything else? No? Thank you all. Next meeting in two weeks.</v>
