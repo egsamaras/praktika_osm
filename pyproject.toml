@@ -1,0 +1,129 @@
+[project]
+name = "praktika-osm"
+version = "0.1.0"
+description = "On-premises meeting minutes with evidence citations and human approval"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "Stratos Samaras" }]
+keywords = [
+  "meeting minutes",
+  "transcription",
+  "speech-to-text",
+  "whisper",
+  "llm",
+  "ollama",
+  "on-premises",
+  "privacy",
+  "arabic",
+  "human-in-the-loop",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Environment :: Web Environment",
+  "Framework :: FastAPI",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Natural Language :: Arabic",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Multimedia :: Sound/Audio :: Speech",
+  "Topic :: Office/Business",
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "pydantic==2.13.5",
+  "pydantic-settings==2.15.0",
+  "typer==0.27.2",
+  "rich==15.0.0",
+  "httpx==0.28.1",
+  "fastapi==0.141.1",
+  "uvicorn[standard]==0.53.0",
+  "python-multipart==0.0.32",
+  "jinja2==3.1.6",
+  "python-docx==1.2.0",
+  "structlog==26.1.0",
+  "numpy==2.5.3",
+  "soundfile==0.14.0",
+  "sounddevice==0.5.6",
+  "silero-vad==6.2.1",
+  "torch==2.8.0",              # required by silero-vad and mlx-whisper; pinned once so the diarize extra agrees
+  "rapidfuzz==3.14.6",
+  "webvtt-py==0.5.1",
+  "pyyaml==6.0.3",
+  "cryptography==50.0.1",
+  "python-dateutil==2.9.0.post0",
+  "huggingface-hub==1.31.0",
+]
+
+[project.optional-dependencies]
+mac = [                          # Apple-silicon STT (MLX). sys_platform == 'darwin' only.
+  "mlx==0.32.2; sys_platform == 'darwin'",
+  "mlx-whisper==0.4.3; sys_platform == 'darwin'",
+  "mlx-audio[stt]==0.5.4; sys_platform == 'darwin'",   # [stt] extra brings sentencepiece + zstandard for cohere_asr
+]
+cuda = [                         # non-Apple STT path (x86 CUDA hosts, CI on Linux)
+  "faster-whisper==1.2.1",
+  "ctranslate2==4.8.2",
+]
+diarize = [                      # pyannote.audio 4.0.7 requires torch>=2.8, torchaudio>=2.8, torchcodec>=0.7
+  "pyannote.audio==4.0.7",
+  "torch==2.8.0",
+  "torchaudio==2.8.0",
+  "torchcodec==0.7.0",
+]
+graph = [                        # Graph transcript poller (not built yet); msal only, certificate credential
+  "msal==1.38.0",
+]
+dev = [
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "ruff==0.16.7",
+  "respx==0.23.1",
+  "hypothesis==6.168.0",
+  "freezegun==1.5.5",
+  "jiwer==4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/egsamaras/praktika_osm"
+Repository = "https://github.com/egsamaras/praktika_osm"
+Issues = "https://github.com/egsamaras/praktika_osm/issues"
+
+[project.scripts]
+praktika = "praktika.cli:app"
+
+[build-system]
+# 77 or later: the licence is declared as an SPDX expression (PEP 639).
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+[tool.setuptools.package-data]
+praktika = ["static/*", "store/schema.sql"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["models: needs local model weights (skipped in CI)", "slow: long-running"]
+addopts = "-q --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "S", "T20"]   # T20 forbids print(); S flags subprocess misuse
+[tool.ruff.lint.per-file-ignores]
+# Tests: assert statements are the test mechanism; fixed keys / fake tokens are synthetic test data.
+"tests/*" = ["S101", "S105", "S106"]
+# Developer utilities, not part of the package: a command-line tool prints to the console.
+"scripts/*" = ["T201"]
+# The fixture generator predates the standards and is regenerated on demand with `say` + ffmpeg.
+"tests/fixtures/make_fixture.py" = ["T201", "S603", "S607", "E501", "E401", "I001"]
+# Subprocess calls to ffmpeg / say / dscl / codesign / security / pbcopy are deliberate and use
+# explicit argument lists; they are marked in place with `# noqa: S603,S607` plus a justification.

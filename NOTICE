@@ -1,0 +1,46 @@
+praktika_osm
+Copyright 2026 Stratos Samaras
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party models
+------------------
+
+This repository contains no model weights. Praktika downloads or loads the
+models below only when its operator configures it to. Each model is published
+by its own authors under its own licence, which the operator must accept and
+comply with; check the model card of the exact revision you use.
+
+Used by default:
+
+  * Whisper large-v3-turbo (OpenAI), English speech-to-text: MIT License.
+    On macOS, the MLX conversion published as
+    mlx-community/whisper-large-v3-turbo; on a Linux server,
+    openai/whisper-large-v3-turbo served by vLLM.
+  * Qwen2.5-14B-Instruct (Qwen team, Alibaba Cloud), drafting, as packaged
+    by Ollama under the tag qwen2.5:14b: Apache License 2.0. Not every
+    Qwen2.5 model size is published under Apache 2.0.
+  * Silero VAD (Silero team), voice activity detection, bundled in the
+    silero-vad Python package: MIT License.
+
+Optional, off by default:
+
+  * Cohere Transcribe Arabic (Cohere Labs),
+    CohereLabs/cohere-transcribe-arabic-07-2026: Apache License 2.0, as its
+    model card states; access is gated (accept its terms on Hugging Face).
+  * Whisper large-v3 (OpenAI), mlx-community/whisper-large-v3-mlx: MIT License.
+  * pyannote speaker-diarization-community-1 (pyannote),
+    pyannote/speaker-diarization-community-1: Creative Commons Attribution 4.0
+    International (CC BY 4.0); attribution is required; access is gated
+    (accept its terms on Hugging Face).
+  * Llama 3.1 8B (Meta), the code's default name for the long-transcript
+    fallback model (llama3.1:8b), used only if the operator pulls it: Llama 3.1
+    Community License.
+
+Third-party software
+--------------------
+
+Python dependencies are installed from the Python Package Index under their
+own licences; uv.lock lists every package and version. Ollama, vLLM, ffmpeg
+and the NVIDIA container images are separate products, installed separately
+under their own licences.

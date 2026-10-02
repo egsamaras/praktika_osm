@@ -1,0 +1,48 @@
+# Python / uv (.venv may be a symlink to a virtualenv kept outside the checkout)
+.venv
+.venv/
+.venv.nosync/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+
+# Secrets and local configuration (never commit; .env.example is the template)
+.env
+
+# Audio: recordings must never be committed. The synthetic speech fixture below (3.9 MB, made
+# with tests/fixtures/make_fixture.py from synthetic speech) is the one exception: the VAD and
+# router tests read it.
+*.wav
+*.mp4
+*.m4a
+*.aiff
+!tests/fixtures/synthetic_meeting.wav
+
+# Generated artefacts
+.praktika-smoke/
+eval_report.md
+audit.jsonl
+*.db
+*.db-wal
+*.db-shm
+
+# The model register (models.yaml) and the weights live in PRAKTIKA_MODELS_DIR (~/praktika-models), outside the repo.
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Small regenerable tone fixture is tracked despite *.wav
+!tests/fixtures/tone_16k.wav
+.praktika-e2e/
+
+# Generated Word copies of the docs (regenerate with scripts/md_to_docx.py)
+docs/*.docx

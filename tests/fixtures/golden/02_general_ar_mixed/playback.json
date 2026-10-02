@@ -1,0 +1,220 @@
+{
+  "ChunkFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "Option two is selected for the notetaker pilot: volunteers only.",
+          "kind": "approved",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0004"
+          ],
+          "quote": "خلاص، we go with option two for the notetaker pilot: volunteers only."
+        },
+        {
+          "statement": "The audio retention question is deferred.",
+          "kind": "deferred",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0010"
+          ],
+          "quote": "لن نقرر مسألة الاحتفاظ اليوم؛ نؤجلها."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Update the Credit Policy glossary.",
+          "owner": "Omar Nasser",
+          "owner_confidence": "explicit",
+          "due_text": "inshallah by Thursday",
+          "refs": [
+            "S0005"
+          ],
+          "quote": "تحديث الـ Credit Policy glossary يكون جاهز inshallah by Thursday."
+        },
+        {
+          "description": "Complete the InfoSec review before the pilot starts.",
+          "owner": "S. Al-Mahmood",
+          "owner_confidence": "explicit",
+          "due_text": "by the twenty-fifth",
+          "refs": [
+            "S0008"
+          ],
+          "quote": "The InfoSec review، أنا أتولاها، ready by the twenty-fifth."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Do we keep the audio recording after the minutes are approved?",
+          "raised_by": "L. Farouk",
+          "owner": null,
+          "refs": [
+            "S0007"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "description": "Transcripts may include customer names.",
+          "severity": "medium",
+          "owner": null,
+          "mitigation": "Delete them before the model sees them.",
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Notetaker pilot",
+          "point": "Transcription stays on bank devices.",
+          "refs": [
+            "S0002"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "BHD 250,000",
+          "context": "first phase budget",
+          "refs": [
+            "S0009"
+          ]
+        }
+      ]
+    }
+  ],
+  "MergedFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "Option two is selected for the notetaker pilot: volunteers only.",
+          "kind": "approved",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0004"
+          ],
+          "quote": "خلاص، we go with option two for the notetaker pilot: volunteers only."
+        },
+        {
+          "statement": "The audio retention question is deferred.",
+          "kind": "deferred",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0010"
+          ],
+          "quote": "لن نقرر مسألة الاحتفاظ اليوم؛ نؤجلها."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Update the Credit Policy glossary.",
+          "owner": "Omar Nasser",
+          "owner_confidence": "explicit",
+          "due_text": "inshallah by Thursday",
+          "refs": [
+            "S0005"
+          ],
+          "quote": "تحديث الـ Credit Policy glossary يكون جاهز inshallah by Thursday."
+        },
+        {
+          "description": "Complete the InfoSec review before the pilot starts.",
+          "owner": "S. Al-Mahmood",
+          "owner_confidence": "explicit",
+          "due_text": "by the twenty-fifth",
+          "refs": [
+            "S0008"
+          ],
+          "quote": "The InfoSec review، أنا أتولاها، ready by the twenty-fifth."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Do we keep the audio recording after the minutes are approved?",
+          "raised_by": "L. Farouk",
+          "owner": null,
+          "refs": [
+            "S0007"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "description": "Transcripts may include customer names.",
+          "severity": "medium",
+          "owner": null,
+          "mitigation": "Delete them before the model sees them.",
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Notetaker pilot",
+          "point": "Transcription stays on bank devices.",
+          "refs": [
+            "S0002"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "BHD 250,000",
+          "context": "first phase budget",
+          "refs": [
+            "S0009"
+          ]
+        }
+      ],
+      "retracted_decisions": []
+    }
+  ],
+  "Narrative": [
+    {
+      "summary": "The team chose option two for the notetaker pilot with volunteers only, assigned the Credit Policy glossary update and the InfoSec review, and deferred the audio retention question. The first phase budget is BHD 250,000.",
+      "topics": [
+        {
+          "title": "Notetaker pilot",
+          "summary": "Transcription runs locally; option two with volunteers only was chosen.",
+          "key_points": [
+            "Local transcription.",
+            "Volunteers only."
+          ],
+          "refs": [
+            "S0002",
+            "S0004"
+          ]
+        },
+        {
+          "title": "Preparation",
+          "summary": "The glossary update and the InfoSec review precede the start.",
+          "key_points": [
+            "Glossary by Thursday.",
+            "InfoSec review by the twenty-fifth."
+          ],
+          "refs": [
+            "S0005",
+            "S0008"
+          ]
+        }
+      ]
+    }
+  ],
+  "RetractionVerdict": [
+    {
+      "retracted": false,
+      "refs": [],
+      "note": "No reversal found."
+    },
+    {
+      "retracted": false,
+      "refs": [],
+      "note": "No reversal found."
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+"""Praktika stt package."""

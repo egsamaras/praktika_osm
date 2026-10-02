@@ -1,0 +1,7 @@
+# Replace egsamaras with the account or organisation that hosts the repository.
+# Blank issues stay enabled for questions; they follow the same synthetic-data rule.
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/egsamaras/praktika_osm/security/advisories/new
+    about: Report vulnerabilities privately, never in a public issue. See SECURITY.md.

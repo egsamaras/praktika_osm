@@ -1,0 +1,81 @@
+{
+  "meeting": {
+    "title": "Data team weekly",
+    "date": "2026-09-15",
+    "language": "en+ar",
+    "duration_s": 122.491688
+  },
+  "speakers": [
+    "Layla",
+    "Omar",
+    "Khalid"
+  ],
+  "script": [
+    {
+      "speaker": "Layla",
+      "text": "Good morning everyone. This is the data team weekly on the fifteenth of September. We have three items: the meeting notes trial, the privacy notice, and the reporting server upgrade."
+    },
+    {
+      "speaker": "Omar",
+      "text": "Thanks Layla. On the meeting notes trial, the prototype now transcribes English and Arabic locally on the laptop. Nothing leaves our own devices. I propose we start with volunteers from the data team."
+    },
+    {
+      "speaker": "Khalid",
+      "text": "شكراً عمر. أنا أؤيد الاقتراح، لكن نحتاج مراجعة أمنية قبل البدء. سأكمل المراجعة الأمنية قبل الخامس والعشرين من سبتمبر."
+    },
+    {
+      "speaker": "Layla",
+      "text": "Agreed. So the decision is: the trial starts on the fifth of October, limited to the data team, English and Arabic meetings, and the chair asks everyone for permission to record at the start of each meeting."
+    },
+    {
+      "speaker": "Omar",
+      "text": "I will draft the privacy notice in both languages by Thursday the eighteenth of September and send it to the privacy team for comments."
+    },
+    {
+      "speaker": "Khalid",
+      "text": "One risk: if the transcripts include customer account numbers, we must mask them before the language model sees anything. The notes should be visible only to the meeting owner."
+    },
+    {
+      "speaker": "Layla",
+      "text": "Good point, we add that to the checklist. Open question for next time: how long do we keep the recordings once the notes are signed off? My instinct is to delete them after ten days."
+    },
+    {
+      "speaker": "Omar",
+      "text": "On the server upgrade, the cost estimate goes to the operations committee on the sixth of October. I will circulate the final numbers on Monday the twenty first."
+    },
+    {
+      "speaker": "Layla",
+      "text": "Thank you. To summarise: trial approved from the fifth of October, Omar drafts the notice by the eighteenth, Khalid completes the security review by the twenty fifth, and the retention question comes back next week. Meeting closed."
+    }
+  ],
+  "expected": {
+    "decisions": [
+      "Meeting notes trial starts 2026-10-05, limited to the data team, English and Arabic meetings",
+      "The chair asks everyone for permission to record at the start of each meeting",
+      "Customer account numbers masked before the language model sees transcripts; notes visible only to the meeting owner"
+    ],
+    "actions": [
+      {
+        "owner": "Omar",
+        "task": "Draft the privacy notice (EN+AR) and send it to the privacy team for comments",
+        "due": "2026-09-18"
+      },
+      {
+        "owner": "Khalid",
+        "task": "Complete the security review of the trial",
+        "due": "2026-09-25"
+      },
+      {
+        "owner": "Omar",
+        "task": "Circulate the final server upgrade numbers",
+        "due": "2026-09-21"
+      }
+    ],
+    "open_questions": [
+      "How long to keep recordings once the notes are signed off (proposal: delete after 10 days)"
+    ],
+    "risks": [
+      "Transcripts may contain customer account numbers"
+    ]
+  }
+}

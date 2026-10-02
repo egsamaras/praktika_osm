@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint and test (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # Install exactly what uv.lock pins; never re-resolve in CI.
+      UV_FROZEN: "1"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          # The uv this repository is developed with; docker/linux-test.Dockerfile pins it too.
+          version: "0.12.5"
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Lint
+        run: uv run ruff check src tests
+
+      - name: Check formatting
+        run: uv run ruff format --check src tests
+
+      # pyproject's addopts already has -q; a second one would hide the pass/skip summary.
+      - name: Test
+        run: uv run pytest -p no:cacheprovider

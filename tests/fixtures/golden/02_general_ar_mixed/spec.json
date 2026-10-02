@@ -1,0 +1,101 @@
+{
+  "name": "02_general_ar_mixed",
+  "language": "ar-mixed",
+  "organiser_name": "F. Khalid",
+  "description": "Data team weekly held mostly in Arabic with code-switching.",
+  "traps": [],
+  "meeting": {
+    "id": "M-20260916-a002",
+    "title": "Data team weekly (Arabic)",
+    "meeting_type": "general",
+    "classification": "internal",
+    "language_mode": "ar-mixed",
+    "platform": "teams",
+    "started_at": "2026-09-16T10:00:00+03:00",
+    "ended_at": "2026-09-16T10:30:00+03:00",
+    "chair": "F. Khalid",
+    "organiser": "f.khalid@acme.test",
+    "roster": [
+      {
+        "name": "F. Khalid",
+        "role": "Head of Data (Chair)",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Faisal Khalid",
+          "Faisal",
+          "فيصل خالد",
+          "فيصل"
+        ],
+        "upn": "f.khalid@acme.test"
+      },
+      {
+        "name": "R. Haddad",
+        "role": "Head of Data Engineering",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Rania Haddad",
+          "Rania",
+          "رانيا حداد",
+          "رانيا"
+        ],
+        "upn": "r.haddad@acme.test"
+      },
+      {
+        "name": "L. Farouk",
+        "role": "AI Governance Lead",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Layla Farouk",
+          "Layla",
+          "ليلى فاروق",
+          "ليلى"
+        ],
+        "upn": "l.farouk@acme.test"
+      },
+      {
+        "name": "Omar Nasser",
+        "role": "ML Engineer",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Omar",
+          "عمر ناصر",
+          "عمر"
+        ],
+        "upn": "o.nasser@acme.test"
+      },
+      {
+        "name": "S. Al-Mahmood",
+        "role": "InfoSec Liaison",
+        "organisation": "Acme Bank",
+        "status": "partial",
+        "aliases": [
+          "Sara Al-Mahmood",
+          "Sara",
+          "سارة المحمود",
+          "سارة"
+        ],
+        "upn": "s.almahmood@acme.test"
+      },
+      {
+        "name": "T. Brennan",
+        "role": "Vendor Solutions Architect",
+        "organisation": "Northwind Analytics Ltd",
+        "status": "guest",
+        "aliases": [
+          "Tom Brennan",
+          "Tom"
+        ],
+        "upn": null
+      }
+    ],
+    "room_identities": [],
+    "private": false,
+    "legal_hold": false,
+    "state": "draft_ready",
+    "tags": []
+  }
+}

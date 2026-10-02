@@ -1,0 +1,231 @@
+{
+  "ChunkFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "Phase one of the GPU business case is approved at BHD 250,000; phase two returns as a separate paper in the first quarter.",
+          "kind": "approved",
+          "decided_by": "A. Rashid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0007"
+          ],
+          "quote": "Then we approve phase one at BHD 250,000, and phase two returns as a separate paper in the first quarter."
+        },
+        {
+          "statement": "The Board will be informed of the notetaker pilot at the next quarterly review as an information item.",
+          "kind": "approved",
+          "decided_by": "A. Rashid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0011"
+          ],
+          "quote": "Agreed. N. Sultan, please add it to the Board pack for October."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Add the notetaker pilot to the Board pack for October.",
+          "owner": "N. Sultan",
+          "owner_confidence": "explicit",
+          "due_text": "by the tenth of October",
+          "refs": [
+            "S0011"
+          ],
+          "quote": "Agreed. N. Sultan, please add it to the Board pack for October."
+        },
+        {
+          "description": "Bring the phase two GPU paper back as a separate paper in the first quarter.",
+          "owner": "F. Khalid",
+          "owner_confidence": "inferred",
+          "due_text": "first quarter",
+          "refs": [
+            "S0007"
+          ],
+          "quote": "Then we approve phase one at BHD 250,000, and phase two returns as a separate paper in the first quarter."
+        }
+      ],
+      "questions": [],
+      "risks": [
+        {
+          "description": "The hardware must stay inside our own data centre.",
+          "severity": "medium",
+          "owner": "M. Darwish",
+          "mitigation": null,
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Matters arising",
+          "point": "Action MC-0812 closed.",
+          "refs": [
+            "S0002"
+          ]
+        },
+        {
+          "topic": "GPU business case",
+          "point": "Phase one funded from the technology budget.",
+          "refs": [
+            "S0005"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "BHD 250,000",
+          "context": "GPU first phase",
+          "refs": [
+            "S0004"
+          ]
+        },
+        {
+          "value": "BHD 400,000",
+          "context": "GPU second phase next year",
+          "refs": [
+            "S0004"
+          ]
+        }
+      ]
+    }
+  ],
+  "MergedFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "Phase one of the GPU business case is approved at BHD 250,000; phase two returns as a separate paper in the first quarter.",
+          "kind": "approved",
+          "decided_by": "A. Rashid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0007"
+          ],
+          "quote": "Then we approve phase one at BHD 250,000, and phase two returns as a separate paper in the first quarter."
+        },
+        {
+          "statement": "The Board will be informed of the notetaker pilot at the next quarterly review as an information item.",
+          "kind": "approved",
+          "decided_by": "A. Rashid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0011"
+          ],
+          "quote": "Agreed. N. Sultan, please add it to the Board pack for October."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Add the notetaker pilot to the Board pack for October.",
+          "owner": "N. Sultan",
+          "owner_confidence": "explicit",
+          "due_text": "by the tenth of October",
+          "refs": [
+            "S0011"
+          ],
+          "quote": "Agreed. N. Sultan, please add it to the Board pack for October."
+        },
+        {
+          "description": "Bring the phase two GPU paper back as a separate paper in the first quarter.",
+          "owner": "F. Khalid",
+          "owner_confidence": "inferred",
+          "due_text": "first quarter",
+          "refs": [
+            "S0007"
+          ],
+          "quote": "Then we approve phase one at BHD 250,000, and phase two returns as a separate paper in the first quarter."
+        }
+      ],
+      "questions": [],
+      "risks": [
+        {
+          "description": "The hardware must stay inside our own data centre.",
+          "severity": "medium",
+          "owner": "M. Darwish",
+          "mitigation": null,
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Matters arising",
+          "point": "Action MC-0812 closed.",
+          "refs": [
+            "S0002"
+          ]
+        },
+        {
+          "topic": "GPU business case",
+          "point": "Phase one funded from the technology budget.",
+          "refs": [
+            "S0005"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "BHD 250,000",
+          "context": "GPU first phase",
+          "refs": [
+            "S0004"
+          ]
+        },
+        {
+          "value": "BHD 400,000",
+          "context": "GPU second phase next year",
+          "refs": [
+            "S0004"
+          ]
+        }
+      ],
+      "retracted_decisions": []
+    }
+  ],
+  "Narrative": [
+    {
+      "summary": "The committee closed action MC-0812, approved phase one of the GPU business case at BHD 250,000 with phase two to return as a separate paper, and agreed to inform the Board of the notetaker pilot at its next quarterly review.",
+      "topics": [
+        {
+          "title": "GPU business case",
+          "summary": "Phase one is funded from the approved technology budget; phase two of BHD 400,000 needs its own paper.",
+          "key_points": [
+            "BHD 250,000 approved.",
+            "Hardware stays in our own data centre."
+          ],
+          "refs": [
+            "S0004",
+            "S0005",
+            "S0006"
+          ]
+        },
+        {
+          "title": "Notetaker pilot",
+          "summary": "The pilot runs on internal meetings with volunteers and goes to the Board as an information item.",
+          "key_points": [
+            "Board pack for October."
+          ],
+          "refs": [
+            "S0009",
+            "S0010",
+            "S0011"
+          ]
+        }
+      ]
+    }
+  ],
+  "RetractionVerdict": [
+    {
+      "retracted": false,
+      "refs": [],
+      "note": "No reversal found."
+    },
+    {
+      "retracted": false,
+      "refs": [],
+      "note": "No reversal found."
+    }
+  ]
+}

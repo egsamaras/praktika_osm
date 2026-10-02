@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a defect, reproduced with synthetic data only
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Synthetic data only.** This tracker is public. Never paste real meeting content, recordings,
+        transcripts, minutes, names of real people, e-mail addresses, account or card numbers, tokens or
+        other identifiers, in the text, in logs or in attachments. Reproduce the problem with the
+        fixtures in `tests/fixtures/` or with a meeting you have made up.
+
+        Security vulnerabilities do not belong here: see `SECURITY.md`.
+  - type: checkboxes
+    id: synthetic
+    attributes:
+      label: Synthetic data
+      options:
+        - label: I have not included real meeting content, recordings, names or identifiers.
+          required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: A clear description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: >-
+        The exact commands, with synthetic data. For a bad draft, say which fixture or made-up
+        meeting you used and which template (general, mancom, one_to_one).
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Praktika version or commit; platform (macOS on Apple silicon, Linux x86_64 or Linux aarch64); Python and uv versions; speech and drafting backends.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output or logs
+      description: Redact anything that is not synthetic before pasting.
+      render: text

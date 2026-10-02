@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Praktika — review</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-name">Praktika</span> <span class="brand-sub">minutes review</span></div>
+    <nav class="crumbs"><a href="#" id="nav-list">Meetings</a><span id="crumb-meeting" class="crumb hidden"></span></nav>
+    <div class="viewer" id="viewer"></div>
+  </header>
+
+  <main id="main">
+    <section id="view-list" class="view">
+      <h1>Meetings</h1>
+      <p class="muted">Drafts awaiting review are listed first. Nothing leaves this machine until a named reviewer approves.</p>
+      <table class="meetings" id="meeting-table">
+        <thead><tr><th>Meeting</th><th>Type</th><th>Classification</th><th>State</th><th>Open blocking flags</th><th>Started</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p id="list-empty" class="muted hidden">No meetings yet. Run <code>praktika start</code> or <code>praktika ingest</code>.</p>
+    </section>
+
+    <section id="view-review" class="view hidden">
+      <div class="review-head">
+        <div>
+          <h1 id="r-title"></h1>
+          <div class="meta" id="r-meta"></div>
+        </div>
+        <div class="actions">
+          <select id="reason-select" aria-label="Reason code"></select>
+          <button id="btn-approve" class="primary">Approve</button>
+          <button id="btn-discard" class="danger">Discard</button>
+          <a id="link-export-md" class="button" href="#" download>Export .md</a>
+          <a id="link-export-docx" class="button" href="#" download>Export .docx</a>
+        </div>
+      </div>
+      <div id="notice" class="notice hidden"></div>
+
+      <section class="flags" id="flags-panel">
+        <h2>Reviewer flags <span class="count" id="flag-count"></span></h2>
+        <p class="muted">Priority 1 flags block approval. Items the verifier removed are shown in full so you can restore them if they were said.</p>
+        <ul id="flag-list"></ul>
+      </section>
+
+      <div class="panes">
+        <section class="minutes" id="minutes-pane">
+          <h2>Minutes <span class="muted" id="minutes-version"></span></h2>
+          <div class="field">
+            <label for="summary">Summary</label>
+            <textarea id="summary" rows="4" dir="auto" readonly></textarea>
+          </div>
+          <div id="sections"></div>
+          <div class="regen">
+            <h3>Regenerate a section</h3>
+            <div class="row">
+              <select id="regen-section"></select>
+              <input id="regen-instruction" type="text" placeholder="Instruction for the re-draft, e.g. keep only decisions taken by the Chair" maxlength="500">
+              <button id="btn-regen">Regenerate</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="transcript" id="transcript-pane">
+          <h2>Transcript</h2>
+          <div class="speakers" id="speaker-map"></div>
+          <audio id="player" controls preload="none"></audio>
+          <ol id="segments"></ol>
+        </section>
+      </div>
+
+      <footer class="provenance" id="provenance"></footer>
+    </section>
+  </main>
+
+  <template id="tpl-item">
+    <li class="item">
+      <div class="item-head"><span class="item-id"></span><span class="item-extra muted"></span></div>
+      <textarea class="item-text" rows="2" dir="auto"></textarea>
+      <div class="cites"></div>
+      <div class="item-actions">
+        <select class="item-reason" aria-label="Reason code"></select>
+        <button class="accept">Accept</button>
+        <button class="save">Save change</button>
+        <button class="reject">Reject</button>
+      </div>
+    </li>
+  </template>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+{
+  "decisions": [
+    {
+      "id": "D1",
+      "statement": "Phase one of the GPU business case is approved at BHD 250,000; phase two returns as a separate paper in the first quarter.",
+      "kind": "approved",
+      "refs": [
+        "S0007"
+      ]
+    },
+    {
+      "id": "D2",
+      "statement": "The Board will be informed of the notetaker pilot at the next quarterly review as an information item.",
+      "kind": "approved",
+      "refs": [
+        "S0010",
+        "S0011"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "A1",
+      "description": "Add the notetaker pilot to the Board pack for October.",
+      "owner": "N. Sultan",
+      "owner_confidence": "explicit",
+      "due_text": "by the tenth of October",
+      "due_date": null,
+      "refs": [
+        "S0011",
+        "S0012"
+      ]
+    },
+    {
+      "id": "A2",
+      "description": "Bring the phase two GPU paper back as a separate paper in the first quarter.",
+      "owner": "F. Khalid",
+      "owner_confidence": "inferred",
+      "due_text": "first quarter",
+      "due_date": null,
+      "refs": [
+        "S0007"
+      ]
+    }
+  ],
+  "questions": [],
+  "risks": [
+    {
+      "id": "R1",
+      "description": "The hardware must stay inside our own data centre.",
+      "severity": "medium",
+      "refs": [
+        "S0006"
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "value": "BHD 250,000",
+      "context": "GPU first phase",
+      "refs": [
+        "S0004"
+      ]
+    },
+    {
+      "value": "BHD 400,000",
+      "context": "GPU second phase next year",
+      "refs": [
+        "S0004"
+      ]
+    }
+  ],
+  "matters_arising": [
+    {
+      "previous_action_id": "MC-0812",
+      "status": "closed",
+      "refs": [
+        "S0002"
+      ]
+    }
+  ],
+  "escalations": [
+    "Notetaker pilot to the Board at its next quarterly review as an information item."
+  ],
+  "traps": [],
+  "known_terms": [
+    "Board",
+    "Risk",
+    "Committee",
+    "Finance",
+    "GPU",
+    "October"
+  ]
+}

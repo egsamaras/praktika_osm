@@ -1,0 +1,77 @@
+# EXAMPLE glossary for a fictional organisation, "Acme Bank". It shows the format and a few
+# typical entries. Replace it with your own organisation's terms before you use Praktika on real
+# meetings, and point PRAKTIKA_GLOSSARY_PATH at your copy (the default is this file).
+#
+# What each field does:
+#   canonical        The spelling the minutes should use. Canonical terms prime the speech-to-text
+#                    vocabulary prompt in file order, and the prompt has a fixed budget (terms at
+#                    the end are dropped first), so put the terms that matter most at the top.
+#   variants         Other ways people say or write the term. They are not rewritten; with the
+#                    canonical they count as known vocabulary, so the verifier does not flag them
+#                    as unknown names.
+#   arabic_variants  Arabic renderings. The first one primes the Arabic speech-to-text prompt.
+#   misrenderings    What speech-to-text actually produced for the term. Each is rewritten to the
+#                    canonical after transcription (rapidfuzz partial_ratio >= 92; glossary.py).
+#
+# Tailoring it:
+# - Collect misrenderings from your own transcripts; do not guess them.
+# - A misrendering must not be an ordinary English word on its own (glossary.load refuses it):
+#   the transcript is the evidence behind every citation, so "over dinner" must stay "over
+#   dinner". Use a multi-word pattern instead, as the BHD entry does with "Bahrain dinner".
+# - Change version whenever you edit the file. The file's SHA-256 is recorded in the provenance
+#   of every draft, so each set of minutes says which glossary it was produced with.
+# - Redaction tokens such as «ACC_1» are never touched.
+version: "2026-10-01"
+entries:
+  # The organisation, its committees and its own vocabulary.
+  - canonical: Acme Bank
+    variants: ["Acme", "the bank"]
+    arabic_variants: ["بنك أكمي"]
+    misrenderings: ["Acne Bank", "Ackme Bank", "Acme Bang"]
+  - canonical: ManCom
+    variants: ["Management Committee", "Man Com", "MANCOM"]
+    arabic_variants: ["لجنة الإدارة", "اللجنة الإدارية"]
+    misrenderings: ["Mancom", "Man Comm", "Mankom", "Man-Com"]
+  - canonical: ALCO
+    variants: ["Asset and Liability Committee", "Assets and Liabilities Committee"]
+    arabic_variants: ["لجنة الأصول والخصوم"]
+    misrenderings: ["Al Co", "Alko"]
+
+  # Generic finance and governance terms.
+  - canonical: MNPI
+    variants: ["material non-public information", "inside information"]
+    arabic_variants: ["معلومات جوهرية غير معلنة", "معلومات داخلية"]
+    misrenderings: ["M N P I", "Em NPI"]
+  - canonical: KYC
+    variants: ["Know Your Customer", "customer due diligence"]
+    arabic_variants: ["اعرف عميلك"]
+    misrenderings: ["K Y C", "Kay YC"]
+  - canonical: DPIA
+    variants: ["Data Protection Impact Assessment", "privacy impact assessment"]
+    arabic_variants: ["تقييم أثر حماية البيانات"]
+    misrenderings: ["D P I A", "Deepia", "DPI A"]
+
+  # Currencies. BHD (Bahraini dinar) and SAR (Saudi riyal) show the kind of misrendering
+  # speech-to-text produces for Gulf currencies; add your own currencies the same way.
+  - canonical: BHD
+    variants: ["Bahraini dinar", "Bahraini dinars", "dinar", "dinars", "BD"]
+    arabic_variants: ["دينار بحريني", "دينار", "د.ب"]
+    misrenderings: ["Bahrain dinner", "Bahraini dinner", "B H D"]
+  - canonical: SAR
+    variants: ["Saudi riyal", "Saudi riyals", "riyal", "riyals", "SR"]
+    arabic_variants: ["ريال سعودي", "ريال", "ر.س"]
+    misrenderings: ["Riyadh al", "S A R"]
+  - canonical: USD
+    variants: ["US dollar", "US dollars", "dollars"]
+    arabic_variants: ["دولار أمريكي", "دولار"]
+    misrenderings: ["U S D"]
+
+  # Tools that come up when the notetaker itself is discussed.
+  - canonical: Praktika
+    variants: ["the notetaker", "minutes assistant"]
+    arabic_variants: ["براكتيكا"]
+    misrenderings: ["Practica", "Practicer", "Pratika", "Prakteeka"]
+  - canonical: Teams
+    variants: ["Microsoft Teams", "MS Teams"]
+    arabic_variants: ["تيمز", "مايكروسوفت تيمز"]
+    misrenderings: ["MS Teems"]

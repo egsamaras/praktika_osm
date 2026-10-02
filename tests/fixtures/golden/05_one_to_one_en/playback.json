@@ -1,0 +1,199 @@
+{
+  "ChunkFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "Omar Nasser takes the MLOps certification this quarter and the bank covers the fee.",
+          "kind": "agreed_in_principle",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0005"
+          ],
+          "quote": "On development: we agreed you take the MLOps certification this quarter, and the bank covers the fee."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Get Omar access to the GPU test server.",
+          "owner": "F. Khalid",
+          "owner_confidence": "explicit",
+          "due_text": "by Friday",
+          "refs": [
+            "S0003"
+          ],
+          "quote": "Good. I will get you access to the GPU test server by Friday so you can run the Arabic bake-off."
+        },
+        {
+          "description": "Finish the glossary loader and its tests.",
+          "owner": "Omar Nasser",
+          "owner_confidence": "explicit",
+          "due_text": "by the twenty-third",
+          "refs": [
+            "S0004"
+          ],
+          "quote": "I will finish the glossary loader and its tests by the twenty-third."
+        },
+        {
+          "description": "Raise the Arabic model licence question with Compliance.",
+          "owner": "F. Khalid",
+          "owner_confidence": "explicit",
+          "due_text": "this week",
+          "refs": [
+            "S0007"
+          ],
+          "quote": "I will raise the licence question with Compliance this week."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Do we keep the raw audio after approval?",
+          "raised_by": "Omar Nasser",
+          "owner": null,
+          "refs": [
+            "S0008"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "description": "The Arabic model licence is gated and Compliance sign-off is unconfirmed.",
+          "severity": "medium",
+          "owner": "F. Khalid",
+          "mitigation": null,
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Pilot progress",
+          "point": "Redaction module done; glossary loader pending.",
+          "refs": [
+            "S0002"
+          ]
+        }
+      ],
+      "figures": []
+    }
+  ],
+  "MergedFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "Omar Nasser takes the MLOps certification this quarter and the bank covers the fee.",
+          "kind": "agreed_in_principle",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0005"
+          ],
+          "quote": "On development: we agreed you take the MLOps certification this quarter, and the bank covers the fee."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Get Omar access to the GPU test server.",
+          "owner": "F. Khalid",
+          "owner_confidence": "explicit",
+          "due_text": "by Friday",
+          "refs": [
+            "S0003"
+          ],
+          "quote": "Good. I will get you access to the GPU test server by Friday so you can run the Arabic bake-off."
+        },
+        {
+          "description": "Finish the glossary loader and its tests.",
+          "owner": "Omar Nasser",
+          "owner_confidence": "explicit",
+          "due_text": "by the twenty-third",
+          "refs": [
+            "S0004"
+          ],
+          "quote": "I will finish the glossary loader and its tests by the twenty-third."
+        },
+        {
+          "description": "Raise the Arabic model licence question with Compliance.",
+          "owner": "F. Khalid",
+          "owner_confidence": "explicit",
+          "due_text": "this week",
+          "refs": [
+            "S0007"
+          ],
+          "quote": "I will raise the licence question with Compliance this week."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Do we keep the raw audio after approval?",
+          "raised_by": "Omar Nasser",
+          "owner": null,
+          "refs": [
+            "S0008"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "description": "The Arabic model licence is gated and Compliance sign-off is unconfirmed.",
+          "severity": "medium",
+          "owner": "F. Khalid",
+          "mitigation": null,
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Pilot progress",
+          "point": "Redaction module done; glossary loader pending.",
+          "refs": [
+            "S0002"
+          ]
+        }
+      ],
+      "figures": [],
+      "retracted_decisions": []
+    }
+  ],
+  "Narrative": [
+    {
+      "summary": "Progress on the notetaker pilot was reviewed: the redaction module is done and the glossary loader follows. F. Khalid will arrange access to the GPU test server and raise the Arabic model licence with Compliance; Omar Nasser takes the MLOps certification this quarter.",
+      "topics": [
+        {
+          "title": "Pilot progress",
+          "summary": "Redaction is complete; the glossary loader and tests are due by the twenty-third.",
+          "key_points": [
+            "Access to the GPU test server by Friday."
+          ],
+          "refs": [
+            "S0002",
+            "S0003",
+            "S0004"
+          ]
+        },
+        {
+          "title": "Development and licensing",
+          "summary": "The MLOps certification was agreed; the Arabic model licence needs Compliance sign-off.",
+          "key_points": [
+            "Licence question to Compliance."
+          ],
+          "refs": [
+            "S0005",
+            "S0006",
+            "S0007"
+          ]
+        }
+      ]
+    }
+  ],
+  "RetractionVerdict": [
+    {
+      "retracted": false,
+      "refs": [],
+      "note": "No reversal found."
+    }
+  ]
+}

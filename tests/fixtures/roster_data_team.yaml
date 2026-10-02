@@ -1,0 +1,49 @@
+# Synthetic roster for the data team. Every person and organisation is fictional.
+# Format: `attendees` (list of Attendee) and `room_identities` (Teams display names of shared
+# devices). Arabic aliases are the spellings a Teams transcript or STT engine may produce.
+attendees:
+  - name: F. Khalid
+    role: Head of Data (Chair)
+    organisation: Acme Bank
+    status: present
+    aliases: ["Faisal Khalid", "Faisal", "Khalid", "فيصل خالد", "فيصل", "خالد", "Carlet"]
+    upn: f.khalid@acme.test
+  - name: R. Haddad
+    role: Head of Data Engineering
+    organisation: Acme Bank
+    status: present
+    aliases: ["Rania Haddad", "Rania", "رانيا حداد", "رانيا"]
+    upn: r.haddad@acme.test
+  - name: L. Farouk
+    role: AI Governance Lead
+    organisation: Acme Bank
+    status: present
+    aliases: ["Layla Farouk", "Layla", "ليلى فاروق", "ليلى", "Leila"]
+    upn: l.farouk@acme.test
+  - name: Omar Nasser
+    role: ML Engineer
+    organisation: Acme Bank
+    status: present
+    aliases: ["Omar", "عمر ناصر", "عمر", "Oma", "Amr"]
+    upn: o.nasser@acme.test
+  - name: S. Al-Mahmood
+    role: InfoSec Liaison
+    organisation: Acme Bank
+    status: partial
+    aliases: ["Sara Al-Mahmood", "Sara", "سارة المحمود", "سارة", "Sarah"]
+    upn: s.almahmood@acme.test
+  - name: T. Brennan
+    role: Vendor Solutions Architect
+    organisation: Northwind Analytics Ltd
+    status: guest
+    aliases: ["Tom Brennan", "Tom", "توم برينان"]
+    upn: null
+  - name: AI Lab Meeting Room
+    role: null
+    organisation: Acme Bank
+    status: room
+    aliases: ["AI Lab Room", "ACME-AI-LAB-01"]
+    upn: null
+
+room_identities:
+  - AI Lab Meeting Room

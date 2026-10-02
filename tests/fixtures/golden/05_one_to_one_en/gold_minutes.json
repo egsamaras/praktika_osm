@@ -1,0 +1,80 @@
+{
+  "decisions": [
+    {
+      "id": "D1",
+      "statement": "Omar Nasser takes the MLOps certification this quarter and the bank covers the fee.",
+      "kind": "agreed_in_principle",
+      "refs": [
+        "S0005"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "A1",
+      "description": "Get Omar access to the GPU test server.",
+      "owner": "F. Khalid",
+      "owner_confidence": "explicit",
+      "due_text": "by Friday",
+      "due_date": "2026-09-18",
+      "refs": [
+        "S0003"
+      ],
+      "mine": true
+    },
+    {
+      "id": "A2",
+      "description": "Finish the glossary loader and its tests.",
+      "owner": "Omar Nasser",
+      "owner_confidence": "explicit",
+      "due_text": "by the twenty-third",
+      "due_date": null,
+      "refs": [
+        "S0004"
+      ],
+      "mine": false
+    },
+    {
+      "id": "A3",
+      "description": "Raise the Arabic model licence question with Compliance.",
+      "owner": "F. Khalid",
+      "owner_confidence": "explicit",
+      "due_text": "this week",
+      "due_date": null,
+      "refs": [
+        "S0007"
+      ],
+      "mine": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "Do we keep the raw audio after approval?",
+      "raised_by": "Omar Nasser",
+      "refs": [
+        "S0008"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "id": "R1",
+      "description": "The Arabic model licence is gated and Compliance sign-off is unconfirmed.",
+      "severity": "medium",
+      "refs": [
+        "S0006"
+      ]
+    }
+  ],
+  "figures": [],
+  "next_one_to_one": "2026-09-30",
+  "traps": [],
+  "known_terms": [
+    "Compliance",
+    "Legal",
+    "DPO",
+    "GPU",
+    "Friday"
+  ]
+}

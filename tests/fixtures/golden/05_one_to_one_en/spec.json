@@ -1,0 +1,51 @@
+{
+  "name": "05_one_to_one_en",
+  "language": "en",
+  "organiser_name": "F. Khalid",
+  "description": "Private one-to-one; commitments split between organiser and other party.",
+  "traps": [],
+  "meeting": {
+    "id": "M-20260916-a005",
+    "title": "One-to-one: F. Khalid and Omar Nasser",
+    "meeting_type": "one_to_one",
+    "classification": "internal",
+    "language_mode": "en",
+    "platform": "teams",
+    "started_at": "2026-09-16T10:00:00+03:00",
+    "ended_at": "2026-09-16T10:30:00+03:00",
+    "chair": null,
+    "organiser": "f.khalid@acme.test",
+    "roster": [
+      {
+        "name": "F. Khalid",
+        "role": "Head of Data (Chair)",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Faisal Khalid",
+          "Faisal",
+          "فيصل خالد",
+          "فيصل"
+        ],
+        "upn": "f.khalid@acme.test"
+      },
+      {
+        "name": "Omar Nasser",
+        "role": "ML Engineer",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Omar",
+          "عمر ناصر",
+          "عمر"
+        ],
+        "upn": "o.nasser@acme.test"
+      }
+    ],
+    "room_identities": [],
+    "private": true,
+    "legal_hold": false,
+    "state": "draft_ready",
+    "tags": []
+  }
+}

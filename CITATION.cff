@@ -1,0 +1,24 @@
+# Replace egsamaras with the GitHub account or organisation that hosts the repository.
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+type: software
+title: praktika_osm
+abstract: >-
+  Praktika: on-premises meeting minutes with evidence citations and human approval.
+  Draft minutes cite the transcript segment behind every decision, action, open question and
+  risk; a deterministic verifier checks those citations and the numbers and names in the
+  minutes, and a named reviewer approves them before export.
+authors:
+  - given-names: Stratos
+    family-names: Samaras
+license: Apache-2.0
+version: 0.1.0
+date-released: "2026-10-02"
+repository-code: "https://github.com/egsamaras/praktika_osm"
+keywords:
+  - meeting minutes
+  - speech-to-text
+  - on-premises
+  - large language models
+  - human in the loop
+  - privacy

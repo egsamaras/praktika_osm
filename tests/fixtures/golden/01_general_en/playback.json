@@ -1,0 +1,233 @@
+{
+  "ChunkFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "The notetaker pilot starts on the first of October, limited to volunteers from the data team.",
+          "kind": "approved",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0004"
+          ],
+          "quote": "Agreed. The pilot starts on the first of October, limited to volunteers from the data team."
+        },
+        {
+          "statement": "The audio retention question is deferred and taken offline.",
+          "kind": "deferred",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0010"
+          ],
+          "quote": "Let us not decide the retention question today; we take it offline."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Draft the privacy notice and the consent script and share them with Legal.",
+          "owner": "Omar Nasser",
+          "owner_confidence": "explicit",
+          "due_text": "by Thursday",
+          "refs": [
+            "S0005"
+          ],
+          "quote": "I will draft the privacy notice and the consent script by Thursday and share it with Legal."
+        },
+        {
+          "description": "Present the GPU business case to ManCom on the twenty-second of October.",
+          "owner": "R. Haddad",
+          "owner_confidence": "explicit",
+          "due_text": "the twenty-second of October",
+          "refs": [
+            "S0008"
+          ],
+          "quote": "The GPU business case goes to ManCom on the twenty-second of October; I will present it."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Do we keep raw audio after the minutes are approved?",
+          "raised_by": "L. Farouk",
+          "owner": null,
+          "refs": [
+            "S0007"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "description": "Transcripts may include customer names.",
+          "severity": "medium",
+          "owner": null,
+          "mitigation": "Redact before the model sees them.",
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Notetaker pilot",
+          "point": "Everything runs locally on bank devices.",
+          "refs": [
+            "S0002"
+          ]
+        },
+        {
+          "topic": "Budget",
+          "point": "BHD 250,000 for the first phase.",
+          "refs": [
+            "S0009"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "BHD 250,000",
+          "context": "budget line for the first phase",
+          "refs": [
+            "S0009"
+          ]
+        }
+      ]
+    }
+  ],
+  "MergedFindings": [
+    {
+      "decisions": [
+        {
+          "statement": "The notetaker pilot starts on the first of October, limited to volunteers from the data team.",
+          "kind": "approved",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0004"
+          ],
+          "quote": "Agreed. The pilot starts on the first of October, limited to volunteers from the data team."
+        },
+        {
+          "statement": "The audio retention question is deferred and taken offline.",
+          "kind": "deferred",
+          "decided_by": "F. Khalid",
+          "dissent_or_conditions": null,
+          "refs": [
+            "S0010"
+          ],
+          "quote": "Let us not decide the retention question today; we take it offline."
+        }
+      ],
+      "actions": [
+        {
+          "description": "Draft the privacy notice and the consent script and share them with Legal.",
+          "owner": "Omar Nasser",
+          "owner_confidence": "explicit",
+          "due_text": "by Thursday",
+          "refs": [
+            "S0005"
+          ],
+          "quote": "I will draft the privacy notice and the consent script by Thursday and share it with Legal."
+        },
+        {
+          "description": "Present the GPU business case to ManCom on the twenty-second of October.",
+          "owner": "R. Haddad",
+          "owner_confidence": "explicit",
+          "due_text": "the twenty-second of October",
+          "refs": [
+            "S0008"
+          ],
+          "quote": "The GPU business case goes to ManCom on the twenty-second of October; I will present it."
+        }
+      ],
+      "questions": [
+        {
+          "question": "Do we keep raw audio after the minutes are approved?",
+          "raised_by": "L. Farouk",
+          "owner": null,
+          "refs": [
+            "S0007"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "description": "Transcripts may include customer names.",
+          "severity": "medium",
+          "owner": null,
+          "mitigation": "Redact before the model sees them.",
+          "refs": [
+            "S0006"
+          ]
+        }
+      ],
+      "key_points": [
+        {
+          "topic": "Notetaker pilot",
+          "point": "Everything runs locally on bank devices.",
+          "refs": [
+            "S0002"
+          ]
+        },
+        {
+          "topic": "Budget",
+          "point": "BHD 250,000 for the first phase.",
+          "refs": [
+            "S0009"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "BHD 250,000",
+          "context": "budget line for the first phase",
+          "refs": [
+            "S0009"
+          ]
+        }
+      ],
+      "retracted_decisions": []
+    }
+  ],
+  "Narrative": [
+    {
+      "summary": "The meeting approved the notetaker pilot from the first of October for volunteers in the data team, assigned the privacy notice to Omar Nasser and deferred the audio retention question. The hosted transcription offer was declined.",
+      "topics": [
+        {
+          "title": "Notetaker pilot",
+          "summary": "The prototype runs locally; the pilot starts on the first of October with volunteers only.",
+          "key_points": [
+            "Local transcription only.",
+            "Volunteers from the data team."
+          ],
+          "refs": [
+            "S0002",
+            "S0004"
+          ]
+        },
+        {
+          "title": "Budget and next steps",
+          "summary": "The first phase budget is BHD 250,000 and the GPU business case goes to ManCom.",
+          "key_points": [
+            "BHD 250,000 first phase."
+          ],
+          "refs": [
+            "S0008",
+            "S0009"
+          ]
+        }
+      ]
+    }
+  ],
+  "RetractionVerdict": [
+    {
+      "retracted": false,
+      "refs": [],
+      "note": "No reversal found."
+    },
+    {
+      "retracted": false,
+      "refs": [],
+      "note": "No reversal found."
+    }
+  ]
+}

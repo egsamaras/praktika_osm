@@ -1,0 +1,14 @@
+# Never copy developer state into the image (Dockerfile does `COPY . .`).
+.env
+.env.*
+!.env.example
+.venv
+.praktika-smoke
+.git
+__pycache__/
+*.pyc
+.pytest_cache
+.ruff_cache
+*.wav
+tests/fixtures/*.wav
+eval_report.md

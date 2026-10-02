@@ -1,0 +1,81 @@
+{
+  "decisions": [
+    {
+      "id": "D1",
+      "statement": "Option two is selected for the notetaker pilot: volunteers only.",
+      "kind": "approved",
+      "refs": [
+        "S0004",
+        "S0011"
+      ]
+    },
+    {
+      "id": "D2",
+      "statement": "The audio retention question is deferred.",
+      "kind": "deferred",
+      "refs": [
+        "S0010"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "A1",
+      "description": "Update the Credit Policy glossary.",
+      "owner": "Omar Nasser",
+      "owner_confidence": "explicit",
+      "due_text": "inshallah by Thursday",
+      "due_date": "2026-09-17",
+      "refs": [
+        "S0005"
+      ]
+    },
+    {
+      "id": "A2",
+      "description": "Complete the InfoSec review before the pilot starts.",
+      "owner": "S. Al-Mahmood",
+      "owner_confidence": "explicit",
+      "due_text": "by the twenty-fifth",
+      "due_date": null,
+      "refs": [
+        "S0008"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "Do we keep the audio recording after the minutes are approved?",
+      "raised_by": "L. Farouk",
+      "refs": [
+        "S0007"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "id": "R1",
+      "description": "Transcripts may include customer names.",
+      "severity": "medium",
+      "refs": [
+        "S0006"
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "value": "BHD 250,000",
+      "context": "first phase budget",
+      "refs": [
+        "S0009"
+      ]
+    }
+  ],
+  "traps": [],
+  "known_terms": [
+    "Credit",
+    "Policy",
+    "InfoSec",
+    "Thursday"
+  ]
+}

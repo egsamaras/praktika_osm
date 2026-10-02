@@ -1,0 +1,23 @@
+# Dockerfile-specific ignore file for docker/linux-test.Dockerfile (BuildKit picks it up in place
+# of the root .dockerignore). Never copy developer state, caches, or large binaries into the image.
+.venv
+.venv*
+.venv.nosync
+.git
+.praktika-*
+.env
+.env.*
+!.env.example
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.hypothesis
+src/*.egg-info
+build
+dist
+docs/*.docx
+tests/fixtures/synthetic_meeting.wav
+eval_report.md
+.DS_Store

@@ -1,0 +1,87 @@
+{
+  "decisions": [
+    {
+      "id": "D1",
+      "statement": "The notetaker pilot starts on the first of October, limited to volunteers from the data team.",
+      "kind": "approved",
+      "refs": [
+        "S0004",
+        "S0012"
+      ]
+    },
+    {
+      "id": "D2",
+      "statement": "The audio retention question is deferred and taken offline.",
+      "kind": "deferred",
+      "refs": [
+        "S0010"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "A1",
+      "description": "Draft the privacy notice and the consent script and share them with Legal.",
+      "owner": "Omar Nasser",
+      "owner_confidence": "explicit",
+      "due_text": "by Thursday",
+      "due_date": "2026-09-17",
+      "refs": [
+        "S0005"
+      ]
+    },
+    {
+      "id": "A2",
+      "description": "Present the GPU business case to ManCom on the twenty-second of October.",
+      "owner": "R. Haddad",
+      "owner_confidence": "explicit",
+      "due_text": "the twenty-second of October",
+      "due_date": null,
+      "refs": [
+        "S0008"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "Do we keep raw audio after the minutes are approved?",
+      "raised_by": "L. Farouk",
+      "refs": [
+        "S0007"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "id": "R1",
+      "description": "Transcripts may include customer names.",
+      "severity": "medium",
+      "refs": [
+        "S0006"
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "value": "BHD 250,000",
+      "context": "budget line for the first phase",
+      "refs": [
+        "S0009"
+      ]
+    }
+  ],
+  "traps": [
+    {
+      "kind": "suggestion",
+      "text": "Try the vendor's hosted transcription service for comparison."
+    }
+  ],
+  "known_terms": [
+    "ManCom",
+    "Legal",
+    "October",
+    "September",
+    "Thursday"
+  ]
+}

@@ -1,0 +1,169 @@
+{% macro cite(refs) %}
+{% for r in refs %}
+  - [{{ r.id }} {{ r.time }} {{ r.speaker }}] {% if r.arabic %}<bdi>“{{ r.quote }}”</bdi>{% else %}“{{ r.quote }}”{% endif %}
+{% if r.gloss %}
+    - Gloss (EN): {{ r.gloss }}
+{% endif %}
+{% endfor %}
+{% endmacro %}
+**Classification: {{ classification }}**
+
+{% if banner %}
+> **{{ banner }}**
+
+{% endif %}
+# Management Committee minutes: {{ title }}
+
+| Field | Value |
+|---|---|
+| Meeting id | {{ meeting_id }} (minutes v{{ version }}) |
+| Date | {{ date }} |
+| Type | {{ meeting_type }} · {{ platform }} |
+| Chair | {{ chair }} |
+| Organiser | {{ organiser }} |
+| Language profile | {{ language_profile }} |
+| Status | {{ review.status }} |
+
+## Attendees
+
+{% for a in attendees %}
+- {{ a.name }}{% if a.role %} — {{ a.role }}{% endif %} ({% if a.organisation %}{{ a.organisation }}, {% endif %}{{ a.status }})
+{% endfor %}
+
+## Agenda
+
+{% for a in agenda %}
+{{ a.item_no }}. {{ a.title }}{% if a.paper_ref %} (paper {{ a.paper_ref }}){% endif %}{% if a.presenter %} — {{ a.presenter }}{% endif %}
+
+{% else %}
+_No agenda recorded._
+{% endfor %}
+
+## Matters arising
+
+{% for m in matters_arising %}
+- {{ m.previous_action_id }} — **{{ m.status }}**: {{ m.note }}
+{{ cite(m.refs) }}
+{% else %}
+_None._
+{% endfor %}
+
+## Summary
+
+{{ summary }}
+
+## Topics
+
+{% for t in topics %}
+### {{ t.title }}
+
+{{ t.summary }}
+
+{% for p in t.key_points %}
+- {{ p }}
+{% endfor %}
+{{ cite(t.refs) }}
+{% else %}
+_None recorded._
+{% endfor %}
+
+## Decisions
+
+{% for d in decisions %}
+- **{{ d.id }}** ({{ d.kind }}, decided by {{ d.decided_by }}): {{ d.statement }}
+{% if d.dissent %}
+  - Dissent / conditions: {{ d.dissent }}
+{% endif %}
+{{ cite(d.refs) }}
+{% else %}
+_No decisions were recorded._
+{% endfor %}
+
+## Actions
+
+{% for a in actions %}
+- **{{ a.id }}** {{ a.description }} — owner: {{ a.owner }} ({{ a.owner_confidence }}); due: {{ a.due }}
+{{ cite(a.refs) }}
+{% else %}
+_No actions were recorded._
+{% endfor %}
+
+## Open questions
+
+{% for q in questions %}
+- **{{ q.id }}** {{ q.question }}{% if q.raised_by %} (raised by {{ q.raised_by }}){% endif %}
+{{ cite(q.refs) }}
+{% else %}
+_None._
+{% endfor %}
+
+## Risks
+
+{% for r in risks %}
+- **{{ r.id }}** [{{ r.severity }}] {{ r.description }}{% if r.mitigation %} — mitigation: {{ r.mitigation }}{% endif %}
+{{ cite(r.refs) }}
+{% else %}
+_None._
+{% endfor %}
+
+## Figures mentioned
+
+{% for f in figures %}
+- {{ f.value }} — {{ f.context }}{% if f.refs %} [{{ f.refs | join(', ') }}]{% endif %}
+
+{% else %}
+_None._
+{% endfor %}
+
+## Escalations to the Board
+
+{% for e in escalations %}
+- {{ e }}
+{% else %}
+_None._
+{% endfor %}
+
+## Follow-ups
+
+{% for f in follow_ups %}
+- {{ f }}
+{% else %}
+_None._
+{% endfor %}
+
+## Reviewer flags
+
+{% if removed %}
+### Removed items (uncited; restore from the review page if correct)
+
+{% for f in removed %}
+- (priority {{ f.priority }}{% if f.cleared %}, cleared{% endif %}) {{ f.detail }}
+{% endfor %}
+
+{% endif %}
+{% for f in flags %}
+- **{{ f.kind }}** (priority {{ f.priority }}{% if f.cleared %}, cleared{% endif %}): {{ f.detail }}
+{{ cite(f.refs) }}
+{% else %}
+{% if not removed %}
+_No open flags._
+{% endif %}
+{% endfor %}
+
+---
+
+## Provenance
+
+- Generator: {{ provenance.generator_model }} ({{ provenance.model_digest }}){% if provenance.degraded %} — **degraded model; treat with care**{% endif %}
+
+- Prompts: {{ provenance.prompt_version }} sha256 {{ provenance.prompt_sha256 }}
+- Glossary sha256: {{ provenance.glossary_sha256 }} · Template: {{ provenance.template }} · Git: {{ provenance.git_sha }}
+- Transcript sha256: {{ provenance.transcript_sha256 }} · STT: {% for k, v in provenance.stt_engines.items() %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+- Generated at: {{ provenance.generated_at }} · Rendered at: {{ rendered_at }}
+- Reviewer: {{ review.reviewer }} ({{ review.reviewer_source }}) at {{ review.reviewed_at }}
+
+{% if banner %}
+**{{ banner }}** ·
+{% endif %}
+**Classification: {{ classification }}**

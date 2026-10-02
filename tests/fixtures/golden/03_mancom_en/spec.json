@@ -1,0 +1,91 @@
+{
+  "name": "03_mancom_en",
+  "language": "en",
+  "organiser_name": "N. Sultan",
+  "description": "Management Committee, English, in-room; figures and a Board escalation.",
+  "traps": [],
+  "meeting": {
+    "id": "M-20260916-a003",
+    "title": "Management Committee, September",
+    "meeting_type": "mancom",
+    "classification": "internal",
+    "language_mode": "en",
+    "platform": "in_room",
+    "started_at": "2026-09-16T10:00:00+03:00",
+    "ended_at": "2026-09-16T10:30:00+03:00",
+    "chair": "A. Rashid",
+    "organiser": "n.sultan@acme.test",
+    "roster": [
+      {
+        "name": "A. Rashid",
+        "role": "Chief Executive (Chair)",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Adel Rashid",
+          "Adel",
+          "عادل راشد",
+          "عادل"
+        ],
+        "upn": "a.rashid@acme.test"
+      },
+      {
+        "name": "H. Qassim",
+        "role": "Chief Financial Officer",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Huda Qassim",
+          "Huda",
+          "هدى قاسم",
+          "هدى"
+        ],
+        "upn": "h.qassim@acme.test"
+      },
+      {
+        "name": "M. Darwish",
+        "role": "Chief Risk Officer",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Majid Darwish",
+          "Majid",
+          "ماجد درويش",
+          "ماجد"
+        ],
+        "upn": "m.darwish@acme.test"
+      },
+      {
+        "name": "F. Khalid",
+        "role": "Head of Data",
+        "organisation": "Acme Bank",
+        "status": "present",
+        "aliases": [
+          "Faisal Khalid",
+          "Faisal",
+          "فيصل خالد",
+          "فيصل"
+        ],
+        "upn": "f.khalid@acme.test"
+      },
+      {
+        "name": "N. Sultan",
+        "role": "Corporate Secretary",
+        "organisation": "Acme Bank",
+        "status": "secretary",
+        "aliases": [
+          "Noura Sultan",
+          "Noura",
+          "نورة سلطان",
+          "نورة"
+        ],
+        "upn": "n.sultan@acme.test"
+      }
+    ],
+    "room_identities": [],
+    "private": false,
+    "legal_hold": false,
+    "state": "draft_ready",
+    "tags": []
+  }
+}

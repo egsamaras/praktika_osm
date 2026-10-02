@@ -1,0 +1,140 @@
+{
+  "meeting_id": "M-20260916-a005",
+  "source": "vtt",
+  "engines": {
+    "vtt": "teams-recap"
+  },
+  "segments": [
+    {
+      "id": "S0001",
+      "start": 0.0,
+      "end": 9.0,
+      "speaker": "F. Khalid",
+      "speaker_kind": "self",
+      "language": "en",
+      "text": "Thanks for making time, Omar. Let us go through the notetaker pilot and your development plan.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0002",
+      "start": 10.0,
+      "end": 19.0,
+      "speaker": "Omar Nasser",
+      "speaker_kind": "identity",
+      "language": "en",
+      "text": "The redaction module is done; I still need to finish the glossary loader and the tests.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0003",
+      "start": 20.0,
+      "end": 29.0,
+      "speaker": "F. Khalid",
+      "speaker_kind": "self",
+      "language": "en",
+      "text": "Good. I will get you access to the GPU test server by Friday so you can run the Arabic bake-off.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0004",
+      "start": 30.0,
+      "end": 39.0,
+      "speaker": "Omar Nasser",
+      "speaker_kind": "identity",
+      "language": "en",
+      "text": "I will finish the glossary loader and its tests by the twenty-third.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0005",
+      "start": 40.0,
+      "end": 49.0,
+      "speaker": "F. Khalid",
+      "speaker_kind": "self",
+      "language": "en",
+      "text": "On development: we agreed you take the MLOps certification this quarter, and the bank covers the fee.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0006",
+      "start": 50.0,
+      "end": 59.0,
+      "speaker": "Omar Nasser",
+      "speaker_kind": "identity",
+      "language": "en",
+      "text": "One concern: the Arabic model licence is gated, and I am not sure Compliance has signed off.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0007",
+      "start": 60.0,
+      "end": 69.0,
+      "speaker": "F. Khalid",
+      "speaker_kind": "self",
+      "language": "en",
+      "text": "I will raise the licence question with Compliance this week.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0008",
+      "start": 70.0,
+      "end": 79.0,
+      "speaker": "Omar Nasser",
+      "speaker_kind": "identity",
+      "language": "en",
+      "text": "Question for you: do we keep the raw audio after approval? Legal asked me twice.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0009",
+      "start": 80.0,
+      "end": 89.0,
+      "speaker": "F. Khalid",
+      "speaker_kind": "self",
+      "language": "en",
+      "text": "Not decided yet. Let us take it up with the DPO.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    },
+    {
+      "id": "S0010",
+      "start": 90.0,
+      "end": 99.0,
+      "speaker": "F. Khalid",
+      "speaker_kind": "self",
+      "language": "en",
+      "text": "Next one-to-one on the thirtieth of September. Thanks, Omar.",
+      "confidence": 0.9,
+      "track": "vtt",
+      "engine": "teams-vtt",
+      "words": []
+    }
+  ],
+  "redacted": true
+}
