@@ -14,9 +14,13 @@ decision and action citing the transcript line it came from, beside the transcri
 
 **Requirements:** macOS on Apple silicon, or Linux on x86_64 or aarch64 (with an NVIDIA GPU for
 real use); Python 3.12, which uv installs for you; no Windows. With the default drafting model a
-Mac needs 24 GB of memory to run comfortably. Praktika runs from a git checkout, installed in
-editable mode by `uv sync`: it is not published on PyPI, and a built wheel on its own does not
-run, because the prompts, the glossary and the export templates are read from the checkout.
+Mac needs 24 GB of memory to run comfortably. Praktika runs from a copy of this repository
+(cloned with git or downloaded as a ZIP), installed in editable mode by `uv sync`: it is not
+published on PyPI, and a built wheel on its own does not run, because the prompts, the glossary
+and the export templates are read from that copy.
+
+**New to this?** [GETTING_STARTED.md](GETTING_STARTED.md) walks through it on a Mac step by step,
+in plain language, from downloading the files to your first approved minutes.
 
 This repository, `praktika_osm`, is the open-source release. Version 0.1.0 is pilot-grade: the
 controls are in code and tested, but the tool has not been validated on real meetings at scale.
@@ -592,17 +596,49 @@ The software is provided "as is", without warranty of any kind; see the licence.
 
 Version 0.1.0, pilot-grade. The interfaces (command-line options, settings, database schema) may
 change between minor versions until 1.0. Changes are recorded in [CHANGELOG.md](CHANGELOG.md).
-Praktika is not published on PyPI: run it from a git checkout, installed in editable mode with
-`uv sync` (or `pip install -e`, as in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)). A wheel built from
+Praktika is not published on PyPI: run it from a copy of this repository (a git clone or the
+downloaded ZIP), installed in editable mode with `uv sync` (or `pip install -e`, as in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)). A wheel built from
 the repository, or `pip install git+...`, does not run, because the prompts, the glossary and the
 export templates are read from the checkout. Contributions are welcome; see
 [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and
 [docs/DEVELOPING.md](docs/DEVELOPING.md).
 
+## Roadmap
+
+Planned, roughly in this order. What people ask for decides the order, so if one of these matters
+to you, say so in an [issue](https://github.com/egsamaras/praktika_osm/issues).
+
+1. **A Mac app.** Download, double-click, no Terminal: drafting runs inside the app with MLX, so
+   Ollama is not needed; the models are downloaded and checked on first run; the app is signed and
+   notarised.
+2. **Call audio on the Mac, without a bot.** Praktika records the call's sound and your microphone
+   as two tracks on your own Mac, so Teams, Zoom and Meet calls work without anyone joining the
+   meeting.
+3. **Automatic Teams transcripts for organisations.** After each meeting Praktika fetches the
+   transcript through Microsoft Graph, so there is no bot in the call and every line keeps the
+   speaker's Teams name. A Microsoft 365 administrator has to grant the permission.
+4. **A normal install,** with `pip` or Homebrew: the prompts, glossary and templates packaged
+   inside, so no copy of the repository is needed.
+5. **Starting a meeting from the review page:** the consent questions and the file upload as a web
+   form, exactly as strict as the command line.
+6. **A lighter Linux install,** without the CUDA libraries that PyPI's PyTorch brings but
+   Praktika does not use.
+7. **Checking "Figures mentioned"** in management-committee minutes like every other item.
+
+Not planned, on purpose:
+
+* **A bot that joins your calls.** A Teams bot that receives meeting audio must run in Microsoft's
+  cloud with an administrator's approval, which breaks the principle that nothing leaves your
+  hardware.
+* **Recognising people by their voice.** A voiceprint is biometric personal data. Names come from
+  Teams accounts or from the reviewer.
+* **Cloud AI services** for speech or drafting.
+
 ## Documentation
 
 | Document | What it covers |
 |---|---|
+| [GETTING_STARTED.md](GETTING_STARTED.md) | A step-by-step guide for a first-time user on a Mac |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Components, the pipeline step by step, meeting states, the audit log, retention, identity |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Installing on a Linux GPU server, offline-capable |
 | [docs/CONTROLS.md](docs/CONTROLS.md) | The control catalogue C-01 to C-39 |
