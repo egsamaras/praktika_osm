@@ -5,8 +5,9 @@ step, without assuming you are a developer. It takes about 30 to 45 minutes, mos
 downloads. The [README](README.md) has the same steps in more technical detail.
 
 Praktika is not an app you double-click yet. You run it by typing (or pasting) commands into
-**Terminal**, the Mac's command window. Every command below can be pasted as it is. Lines in grey
-boxes marked `text` show what you should see, not something to type.
+**Terminal**, the Mac's command window. Every command below can be pasted as it is, except the two
+in Step 8 that name your own file. The one box that follows the words "you see" shows what
+Terminal prints: do not type that one.
 
 ## What you need
 
@@ -27,8 +28,13 @@ On the [GitHub page](https://github.com/egsamaras/praktika_osm), click the green
 then **Download ZIP**. Your Mac saves `praktika_osm-main.zip` in Downloads; if it does not unzip
 itself, double-click it. You now have a folder called `praktika_osm-main` in Downloads.
 
-(If you already use git, `git clone https://github.com/egsamaras/praktika_osm.git` does the same
-and makes updates easier. Then use `cd praktika_osm` in Step 2 instead.)
+Move that folder into your home folder: in Finder, choose **Go → Home** (or press Shift, ⌘ and H
+together) and drag `praktika_osm-main` from Downloads into the window that opens. Keep it there.
+Praktika runs from this folder, so moving, renaming or deleting it later stops it working.
+
+(If you already use git, run `git clone https://github.com/egsamaras/praktika_osm.git` in your
+home folder instead: it does the same and makes updates easier. Then use `cd ~/praktika_osm` in
+Step 2.)
 
 ## Step 2: open Terminal and go into the folder
 
@@ -36,7 +42,7 @@ Open Spotlight (⌘ and the space bar), type **Terminal** and press Return. A wi
 prompt opens. Paste this and press Return:
 
 ```bash
-cd ~/Downloads/praktika_osm-main
+cd ~/praktika_osm-main
 ```
 
 Nothing visible happens; Terminal is now "inside" the Praktika folder. Every later command
@@ -137,19 +143,20 @@ It prints a line starting `Review UI on http://127.0.0.1:8793/?t=`. Hold ⌘ and
 copy all of it into your browser, **including** the part after `?t=`: that is the key to the page.
 The page runs on your own Mac; it is not a website on the internet.
 
-What you see:
+The page opens on a list called **Meetings**. Click your meeting's title to open it. What you see:
 
 * **Reviewer flags** at the top: things the checker wants a person to confirm, such as a number or
   a name it could not verify. Click **Mark resolved** once you have checked one.
 * **Minutes** on the left: summary, decisions, actions, open questions and risks. Every item shows
   the transcript line it came from (for example `S0011 00:03:17`). For each item, pick a reason
   from its list and press **Accept**, **Save change** (after correcting the text) or **Reject**
-  (for example with the reason `not_said`).
-* **Transcript** on the right, so you can check each item against what was said.
+  (for example with the reason **not said**).
+* **Transcript** on the right (below the minutes if the browser window is narrow), so you can check
+  each item against what was said.
 
-When you are satisfied, choose a reason at the top (for example `accurate`) and press
-**Approve**. Then **Export .docx** gives you the minutes as a Word file (**Export .md** as plain
-text). Before approval, export is refused on purpose.
+When you are satisfied, choose a reason at the top (for example **accurate**), press **Approve**
+and confirm with **OK**. Then **Export .docx** gives you the minutes as a Word file
+(**Export .md** as plain text). Before approval, export is refused on purpose.
 
 To stop the review page, click in Terminal and press Control and C together.
 
@@ -166,7 +173,12 @@ Teams settings and on your role in the meeting. Then, in Terminal, in the Prakti
 uv run praktika ingest ~/Downloads/your-meeting.vtt --title "Weekly team meeting"
 ```
 
-Teams already knows who said what, so the minutes name the right people.
+Replace `your-meeting.vtt` with your file's name (and `your-recording.m4a` in the next command).
+If the name has spaces, type `uv run praktika ingest ` (ending with a space), drag the file from
+Finder onto the Terminal window, then add the `--title` part and press Return.
+
+Teams already knows who said what, so the minutes name the right people. If macOS asks whether
+Terminal may access files in your Downloads folder, click **Allow**.
 
 **A recording you already have** (`.m4a`, `.mp3`, `.wav` or `.mp4`):
 
@@ -175,8 +187,10 @@ uv run praktika ingest ~/Downloads/your-recording.m4a --title "Project meeting"
 ```
 
 Praktika transcribes it first, which takes longer. A recording does not say who is speaking, so
-every line shows the speaker as "unknown" and the minutes cannot tell who said what: add the
-owners of actions yourself when you review them.
+every line shows the speaker as "unknown" and the minutes cannot tell who said what. In the
+exported minutes these actions show the owner as "Unassigned", and the review page cannot set an
+owner. If one needs an owner, write the name into the action's text, choose the reason
+**wrong owner** and press **Save change**; the Owner column still says Unassigned.
 
 **A meeting in the room, recorded by your Mac's microphone:**
 
@@ -185,9 +199,10 @@ uv run praktika start --title "Planning meeting"
 ```
 
 It shows a short consent script to read out, asks the same questions, then records until you press
-Control and C. Every line is labelled `ME`, because one microphone cannot tell voices apart. The first time, macOS asks whether Terminal may use the microphone: allow it. It
-hears what your Mac's microphone hears; on a Teams or Zoom call that is your own voice, and the
-others only through your speakers. For calls, the Teams transcript route above is better.
+Control and C. Every line is labelled `ME`, because one microphone cannot tell voices apart. The
+first time, macOS asks whether Terminal may use the microphone: allow it. It hears what your Mac's
+microphone hears; on a Teams or Zoom call that is your own voice, and the others only through your
+speakers. For calls, the Teams transcript route above is better.
 
 After each one, run `uv run praktika serve` again to review, approve and export.
 
@@ -201,10 +216,15 @@ After each one, run `uv run praktika serve` again to review, approve and export.
   key that protects personal details in them is in your macOS Keychain, as an item called
   `praktika-vault`. The first time, macOS may ask whether to allow access to it: choose
   **Always Allow**.
-* **Deleting old meetings automatically.** Recordings, transcripts and drafts are deleted on a
-  schedule once their time is up. To make that happen hourly, run `uv run praktika retention
-  install` once and then the `launchctl` command it prints.
-* **Removing Praktika.** See [Uninstalling](README.md#uninstalling) in the README.
+* **Deleting recordings, transcripts and drafts automatically.** Praktika's own copies of
+  recordings, transcripts and drafts are deleted on a schedule once their time is up. To make
+  that happen hourly, run `uv run praktika retention install` once and then the `launchctl`
+  command it prints. Approved minutes are kept: they have no timer. The file you gave Praktika
+  (for example in Downloads) and your exported minutes are never deleted by Praktika: delete them
+  yourself when you no longer need them.
+* **Removing Praktika.** See [Uninstalling](README.md#uninstalling) in the README. If you
+  downloaded the extra model for long meetings, also run `ollama rm llama3.1:8b`. Finally, delete
+  the `praktika_osm-main` folder.
 
 ## When something goes wrong
 
@@ -214,8 +234,10 @@ After each one, run `uv run praktika serve` again to review, approve and export.
 | `zsh: command not found: uv` (or `ollama`, `ffmpeg`) | Run Step 3 again. |
 | `cd: no such file or directory` | The folder has a different name or place. In Finder, drag the Praktika folder onto the Terminal window after typing `cd ` (with a space), then press Return. |
 | The draft seems stuck | It is probably still drafting; a long meeting can take 10 minutes or more on a laptop. If nothing changes for much longer, check that Ollama is running (Step 5). |
-| The review page says the link is invalid or refuses access | Open the link exactly as printed, including everything after `?t=`. |
-| `error: ... refused` when you ingest | One of your answers stopped the meeting, for example an objection or an out-of-scope meeting. That is the consent gate working. |
+| The review page shows an empty Meetings list, or says "missing or wrong session token" | Close the tab and open the link exactly as `serve` printed it, including everything after `?t=`. |
+| `consent.refused`, then a line such as `error: an objection was received` | One of your answers stopped the meeting, for example an objection or an out-of-scope meeting. That is the consent gate working. |
+| Drafting fails on a meeting several hours long | For very long transcripts Praktika switches to a smaller model. Download it once with `ollama pull llama3.1:8b`, then run the command named just above the error, with `uv run` in front: for example `uv run praktika generate M-20261002-911a`, with your meeting's ID. Do not ingest the file again: that creates a second meeting. |
+| **Save change** says the text "contains an identifier" | Praktika will not store an account number, a phone number or an e-mail address in the minutes, or an amount next to a person's name. Reword the text so that the value is not in it. |
 | Export is refused | The minutes are not approved yet. Approve them on the review page first. |
 
 ## Getting help
