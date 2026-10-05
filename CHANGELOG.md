@@ -6,6 +6,26 @@ All notable changes to this project are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+* A single-word glossary misrendering now matches only exactly, never fuzzily: one letter away is
+  where names and ordinary words are ("Deepia" turned "Deepika" into "DPIA"). List every spelling
+  you see. Multi-word misrenderings are still matched fuzzily.
+* `glossary.load` refuses more single-word misrenderings: Q1 to Q4, Dale, Del, Jenny, Pratik,
+  Pratika, Practice, Practices, Practical, Team's and Whisperer. A glossary of your own that lists
+  any of them stops ingest with an error until you replace it with a multi-word pattern; the
+  example glossary of 0.1.0 listed "Pratika".
+
+### Fixed
+
+* Glossary normalisation changed everyday speech in the transcript, which is the evidence behind
+  every citation: "Practice makes perfect" became "Praktika makes perfect", an opening quote next
+  to a corrected word was dropped, "Bahrain, dinner" was read as one misrendering and "S A R A H"
+  became "SAR A H". The example glossary drops "Pratika", "Riyadh al", "Bahrain dinner" and
+  "Bahraini dinner", which rewrote a name, a district and a real dinner.
+* Markdown export puts each citation on its own line; several citations of one topic, question
+  or risk ran together.
+
 ## [0.1.0] - 2026-10-02
 
 First public release. Pilot-grade: the controls are in code and tested; the tool has not been

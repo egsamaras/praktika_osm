@@ -44,10 +44,15 @@ def test_misrendering_replaced() -> None:
 
 
 def test_fuzzy_match_respects_threshold_and_word_boundaries() -> None:
-    # Close-but-not-equal spelling is caught at the default threshold...
-    assert normalise_text("the Notatakas pilot", ENTRIES) == "the notetaker pilot"
+    # A multi-word misrendering is matched fuzzily at the default threshold...
+    assert normalise_text("the note tackers said", ENTRIES) == "the notetaker said"
     # ...but not at a stricter one.
-    assert normalise_text("the Notatakas pilot", ENTRIES, threshold=100) == "the Notatakas pilot"
+    assert normalise_text("the note tackers said", ENTRIES, threshold=100) == (
+        "the note tackers said"
+    )
+    # A single-word misrendering is matched exactly: one letter away is where names are.
+    assert normalise_text("the Notataka pilot", ENTRIES) == "the notetaker pilot"
+    assert normalise_text("the Notatakas pilot", ENTRIES) == "the Notatakas pilot"
     # Substrings inside longer words are never replaced (partial_ratio alone would).
     assert normalise_text("Akmeville and Acmyton", ENTRIES) == "Akmeville and Acmyton"
     # Case matters: lower-case "akme" is not a listed misrendering.
@@ -120,9 +125,8 @@ def test_ordinary_words_are_never_rewritten(tmp_path: Path) -> None:
     entries, _ = load(REPO / "glossary.yaml")
     text = "Let us take it offline over dinner on Thursday."
     assert normalise_text(text, entries) == text
-    assert normalise_text("the fee is five hundred Bahrain dinner", entries) == (
-        "the fee is five hundred BHD"
-    )
+    # "Bahrain dinner" is not a misrendering: "after the Bahrain dinner" is ordinary speech
+    assert normalise_text("after the Bahrain dinner", entries) == "after the Bahrain dinner"
     assert normalise_text("we left the case file at the office near the board room", entries) == (
         "we left the case file at the office near the board room"
     )
@@ -138,3 +142,81 @@ def test_ordinary_words_are_never_rewritten(tmp_path: Path) -> None:
         "entries:\n  - canonical: BHD\n    misrenderings: ['Bahrain dinner']\n", encoding="utf-8"
     )
     assert load(ok)[0][0].misrenderings == ["Bahrain dinner"]
+
+
+#: Everyday speech that a misrendering list can easily change: names, places, business
+#: shorthand and words one letter away from a misrendering.
+EVERYDAY = [
+    "Q1 results were strong.",
+    "Dale said yes.",
+    "Thanks Jenny I agree.",
+    "Practical steps first.",
+    "Practice makes perfect.",
+    "Pratik will send the deck.",
+    "Thanks Pratika, I agree.",
+    "Prateeka said yes.",
+    "Thanks Deepika, I agree.",
+    "Send it to Sarah, that is S A R A H.",
+    "The Riyadh al Malqa branch opens soon.",
+    "We are hosting a Bahraini dinner for the delegation.",
+    "We were in Bahrain, dinner was at eight.",
+]
+
+
+def test_shipped_glossary_leaves_everyday_speech_alone() -> None:
+    """Names, places and business shorthand in the transcript are evidence and stay as said;
+    the known misrenderings are still corrected."""
+    entries, _ = load(REPO / "glossary.yaml")
+    for text in EVERYDAY:
+        assert normalise_text(text, entries) == text, text
+    assert normalise_text("Practica is live and Mankom met.", entries) == (
+        "Praktika is live and ManCom met."
+    )
+
+
+def test_a_single_word_misrendering_matches_exactly(tmp_path: Path) -> None:
+    """A fuzzy match is one letter away, so 'Practica' would have turned a sentence-initial
+    'Practical' or 'Practice' into 'Praktika', and 'Deepia' turned 'Deepika' into 'DPIA'; a single
+    word is corrected only when it is exactly the misrendering, and never when it is an ordinary
+    word."""
+    names = GlossaryEntry(canonical="DPIA", misrenderings=["Deepia"])
+    assert normalise_text("Thanks Deepika, the Deepia is done.", [names]) == (
+        "Thanks Deepika, the DPIA is done."
+    )
+    entry = GlossaryEntry(canonical="Praktika", misrenderings=["Practica", "Practicer"])
+    for text in ("Practical steps.", "Practice first.", "Practices vary."):
+        assert normalise_text(text, [entry]) == text, text
+    assert normalise_text("Practica steps.", [entry]) == "Praktika steps."
+    assert normalise_text("the Practicas pilot", [entry]) == "the Practicas pilot"
+    for word in ("Q1", "Dale", "Del", "Team's", "Whisperer", "Jenny", "Pratika"):
+        bad = tmp_path / "glossary.yaml"
+        bad.write_text(
+            f'entries:\n  - canonical: X\n    misrenderings: ["{word}"]\n', encoding="utf-8"
+        )
+        with pytest.raises(ValueError, match="ordinary word"):
+            load(bad)
+
+
+def test_a_correction_keeps_the_punctuation_around_it() -> None:
+    """Quotes and brackets around a corrected word stay in the transcript; words that
+    punctuation separates are two phrases, never one misrendering, unless the misrendering has
+    that punctuation itself; and a spelled-out code inside a longer spelling is left alone."""
+    entries = [
+        GlossaryEntry(canonical="Praktika", misrenderings=["Practica"]),
+        GlossaryEntry(canonical="ManCom", misrenderings=["Man Comm"]),
+        GlossaryEntry(canonical="AI Council", misrenderings=["A.I. Council"]),
+        GlossaryEntry(canonical="SAR", misrenderings=["S A R"]),
+    ]
+    cases = {
+        '"Practica is live," she said.': '"Praktika is live," she said.',
+        "(Practica) is live.": "(Praktika) is live.",
+        "“Practica” works.": "“Praktika” works.",
+        "[Practica] works.": "[Praktika] works.",
+        "Man, Comm said; then Man Comm agreed.": "Man, Comm said; then ManCom agreed.",
+        "Man (Comm) said.": "Man (Comm) said.",
+        "Spell it: S A R A H.": "Spell it: S A R A H.",
+        "Pay in S A R please.": "Pay in SAR please.",
+        "The A.I. Council approved it.": "The AI Council approved it.",
+    }
+    for text, expected in cases.items():
+        assert normalise_text(text, entries) == expected, text

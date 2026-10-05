@@ -11,17 +11,22 @@
 #                    as unknown names.
 #   arabic_variants  Arabic renderings. The first one primes the Arabic speech-to-text prompt.
 #   misrenderings    What speech-to-text actually produced for the term. Each is rewritten to the
-#                    canonical after transcription (rapidfuzz partial_ratio >= 92; glossary.py).
+#                    canonical after transcription: a single word only where it appears exactly,
+#                    a phrase also when it is a near match (rapidfuzz ratio >= 92; glossary.py).
 #
 # Tailoring it:
 # - Collect misrenderings from your own transcripts; do not guess them.
 # - A misrendering must not be an ordinary English word on its own (glossary.load refuses it):
 #   the transcript is the evidence behind every citation, so "over dinner" must stay "over
-#   dinner". Use a multi-word pattern instead, as the BHD entry does with "Bahrain dinner".
+#   dinner". Nor may it be a first name, a place name, another organisation's acronym or any
+#   phrase people say for its own sake: "Pratika" would rewrite a colleague's name, "Riyadh al"
+#   a district ("Riyadh al Malqa") and "Bahraini dinner" an actual dinner. Use a multi-word
+#   pattern that nobody would say for its own sake instead, as the ManCom entry does with
+#   "Man Comm". A missed correction costs a reviewer a moment; a wrong one changes the evidence.
 # - Change version whenever you edit the file. The file's SHA-256 is recorded in the provenance
 #   of every draft, so each set of minutes says which glossary it was produced with.
 # - Redaction tokens such as «ACC_1» are never touched.
-version: "2026-10-01"
+version: "2026-10-05"
 entries:
   # The organisation, its committees and its own vocabulary.
   - canonical: Acme Bank
@@ -51,16 +56,16 @@ entries:
     arabic_variants: ["تقييم أثر حماية البيانات"]
     misrenderings: ["D P I A", "Deepia", "DPI A"]
 
-  # Currencies. BHD (Bahraini dinar) and SAR (Saudi riyal) show the kind of misrendering
-  # speech-to-text produces for Gulf currencies; add your own currencies the same way.
+  # Currencies. Speech-to-text often spells a currency code out letter by letter; add your own
+  # currencies the same way.
   - canonical: BHD
     variants: ["Bahraini dinar", "Bahraini dinars", "dinar", "dinars", "BD"]
     arabic_variants: ["دينار بحريني", "دينار", "د.ب"]
-    misrenderings: ["Bahrain dinner", "Bahraini dinner", "B H D"]
+    misrenderings: ["B H D"]
   - canonical: SAR
     variants: ["Saudi riyal", "Saudi riyals", "riyal", "riyals", "SR"]
     arabic_variants: ["ريال سعودي", "ريال", "ر.س"]
-    misrenderings: ["Riyadh al", "S A R"]
+    misrenderings: ["S A R"]
   - canonical: USD
     variants: ["US dollar", "US dollars", "dollars"]
     arabic_variants: ["دولار أمريكي", "دولار"]
@@ -70,7 +75,7 @@ entries:
   - canonical: Praktika
     variants: ["the notetaker", "minutes assistant"]
     arabic_variants: ["براكتيكا"]
-    misrenderings: ["Practica", "Practicer", "Pratika", "Prakteeka"]
+    misrenderings: ["Practica", "Practicer", "Prakteeka"]
   - canonical: Teams
     variants: ["Microsoft Teams", "MS Teams"]
     arabic_variants: ["تيمز", "مايكروسوفت تيمز"]
