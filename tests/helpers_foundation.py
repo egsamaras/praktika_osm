@@ -11,6 +11,7 @@ from typing import Any
 from conftest import FROZEN_NOW, make_transcript
 from pydantic import BaseModel
 
+from praktika import consent
 from praktika.models import (
     ActionDraft,
     ActionItem,
@@ -74,7 +75,7 @@ def consent_kwargs(**over: Any) -> dict[str, Any]:
         "objections": False,
         "method": "spoken",
         "teams_transcription_started": True,
-        "script_version": "2026-10-01",
+        "script_version": consent.SCRIPT_VERSION,
         "purpose": "Minutes of the data team weekly meeting",
         "scope_checks": {"not_board": True, "not_foreign_hosted": True, "not_hr": True},
         "recorded_by": "f.khalid@acme.test",

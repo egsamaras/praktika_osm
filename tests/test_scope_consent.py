@@ -266,3 +266,54 @@ def test_no_skip_flag_exists() -> None:
     source = inspect.getsource(consent)
     assert "os.environ" not in source and "getenv" not in source, "gate must not read env"
     assert not re.search(r"def gate\([^)]*=\s*(True|False)", source, re.S), "no defaults"
+
+
+@pytest.mark.parametrize(
+    ("title", "hints"),
+    [
+        # words that only contain a hint never warn
+        ("Dashboard review", []),
+        ("Keyboard shortcuts", []),
+        ("Onboarding plan", []),
+        ("Town hall in the auditorium", []),
+        ("3hr workshop", []),
+        ("Sprint planning (2 hrs)", []),
+        # whole words, plurals and possessives warn
+        ("Central Bank inspection prep", ["regulator"]),
+        ("Supervisory review", ["regulator"]),
+        ("Regulatory meeting", ["regulator"]),
+        ("Regulators update", ["regulator"]),
+        ("Auditor's findings", ["regulator"]),
+        ("Board papers review", ["board"]),
+        ("HR policy", ["hr"]),
+        ("Grievance hearing", ["hr"]),
+        ("client calls review", ["customer_call"]),
+        ("Litigation update", ["legal_privileged"]),
+        # file stems (the default ingest title), run-on words, camelCase and digits still warn
+        ("Board_Meeting_2026-10-01", ["board"]),
+        ("boardmeeting_2026-10-01", ["board"]),
+        ("BOARDMEETING", ["board"]),
+        ("customercall", ["customer_call"]),
+        ("Central_Bank visit", ["regulator"]),
+        ("Q4Board", ["board"]),
+        ("BoardMeeting", ["board"]),
+        ("HRMeeting", ["hr"]),
+        ("Appraisal2026", ["hr"]),
+        # Arabic: prefixes attached to Latin words and to Arabic words, and spelling variants
+        ("مراجعة الـBoard", ["board"]),
+        ("اجتماع مع البنك المركزي", ["regulator"]),
+        ("ومجلس الإدارة", ["board"]),
+        ("مجلس الادارة", ["board"]),
+        ("اجتماع مجلس إدارة البنك", ["board"]),
+        ("الموارد البشريه", ["hr"]),
+        ("تاديب موظف", ["hr"]),
+        ("اجتماع مع العملاء", ["customer_call"]),
+    ],
+)
+def test_title_hints_match_whole_words(title: str, hints: list[str]) -> None:
+    """A Latin-script hint must start a word, so 'dashboard' and 'onboarding' no longer warn of
+    a board meeting, while file stems, run-on words, camelCase, digits and attached Arabic
+    prefixes still warn; Arabic hints match after the same normalisation as search."""
+    from praktika.cli.gate_prompts import title_hints
+
+    assert title_hints(title) == hints

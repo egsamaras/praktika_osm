@@ -24,7 +24,18 @@ All notable changes to this project are recorded here. The format follows
   became "SAR A H". The example glossary drops "Pratika", "Riyadh al", "Bahrain dinner" and
   "Bahraini dinner", which rewrote a name, a district and a real dinner.
 * Markdown export puts each citation on its own line; several citations of one topic, question
-  or risk ran together.
+  or risk ran together. An item without citations no longer adds a blank line (which made
+  Markdown render the whole list loose), and a topic's citations follow an "Evidence:" line
+  instead of nesting under the topic's last key point.
+* Title warnings for pilot exclusions match a keyword only at the start of a word ("auditor" and
+  "hr" must also end at one): "Dashboard review", "Onboarding plan", "Town hall in the
+  auditorium" and "3hr workshop" no longer warn, while file-name titles ("Board_Meeting",
+  "boardmeeting", "Q4Board", "BoardMeeting") and Arabic prefixes attached to a word still do.
+  "HR" is now recognised next to punctuation and in camelCase ("HR: policy", "HR-Finance",
+  "HRMeeting"), and common Arabic spelling variants now warn as well.
+* The Graph error hint for `DeltaFilterNotAllowed` told administrators to change the application
+  access policy; a filter on a delta link is a defect in the poller. A missing access policy has
+  its own code, `ApplicationAccessPolicyMissing`, and the tenant hints name `-Identity Global`.
 
 ## [0.1.0] - 2026-10-02
 
@@ -61,7 +72,5 @@ validated on real meetings at scale. See [docs/LIMITATIONS.md](docs/LIMITATIONS.
   development and limitations; contribution guidelines, a code of conduct, a security policy, and
   issue and pull request templates.
 
-<!-- These two links work only once the v0.1.0 tag has been pushed and a GitHub release created
-for it; until then they return 404. Replace egsamaras at the same time. -->
 [Unreleased]: https://github.com/egsamaras/praktika_osm/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/egsamaras/praktika_osm/releases/tag/v0.1.0

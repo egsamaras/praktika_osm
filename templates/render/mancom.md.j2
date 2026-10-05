@@ -1,5 +1,8 @@
 {# One line per citation. The engine runs with trim_blocks, so a line that ends in a block tag
-   loses its line break: each citation after the first starts with an explicit one instead. #}
+   loses its line break: each citation after the first starts with an explicit one instead. An
+   item's citations hang off its own line only when it has some, so an item without citations
+   adds no blank line (a blank line turns the whole list loose), and a topic's citations follow
+   an "Evidence:" line, so Markdown does not nest them under the topic's last key point. #}
 {% macro cite(refs) %}
 {% for r in refs %}
 {% if not loop.first %}{{ "\n" }}{% endif %}  - [{{ r.id }} {{ r.time }} {{ r.speaker }}] {% if r.arabic %}<bdi>“{{ r.quote }}”</bdi>{% else %}“{{ r.quote }}”{% endif %}
@@ -42,8 +45,7 @@ _No agenda recorded._
 ## Matters arising
 
 {% for m in matters_arising %}
-- {{ m.previous_action_id }} — **{{ m.status }}**: {{ m.note }}
-{{ cite(m.refs) }}
+- {{ m.previous_action_id }} — **{{ m.status }}**: {{ m.note }}{% if m.refs %}{{ "\n" }}{{ cite(m.refs) }}{% endif %}{{ "" }}
 {% else %}
 _None._
 {% endfor %}
@@ -62,6 +64,10 @@ _None._
 {% for p in t.key_points %}
 - {{ p }}
 {% endfor %}
+{% if t.key_points and t.refs %}
+
+Evidence:
+{% endif %}
 {{ cite(t.refs) }}
 {% else %}
 _None recorded._
@@ -91,8 +97,7 @@ _No actions were recorded._
 ## Open questions
 
 {% for q in questions %}
-- **{{ q.id }}** {{ q.question }}{% if q.raised_by %} (raised by {{ q.raised_by }}){% endif %}{{ "" }}
-{{ cite(q.refs) }}
+- **{{ q.id }}** {{ q.question }}{% if q.raised_by %} (raised by {{ q.raised_by }}){% endif %}{% if q.refs %}{{ "\n" }}{{ cite(q.refs) }}{% endif %}{{ "" }}
 {% else %}
 _None._
 {% endfor %}
@@ -100,8 +105,7 @@ _None._
 ## Risks
 
 {% for r in risks %}
-- **{{ r.id }}** [{{ r.severity }}] {{ r.description }}{% if r.mitigation %} — mitigation: {{ r.mitigation }}{% endif %}{{ "" }}
-{{ cite(r.refs) }}
+- **{{ r.id }}** [{{ r.severity }}] {{ r.description }}{% if r.mitigation %} — mitigation: {{ r.mitigation }}{% endif %}{% if r.refs %}{{ "\n" }}{{ cite(r.refs) }}{% endif %}{{ "" }}
 {% else %}
 _None._
 {% endfor %}
@@ -142,8 +146,7 @@ _None._
 
 {% endif %}
 {% for f in flags %}
-- **{{ f.kind }}** (priority {{ f.priority }}{% if f.cleared %}, cleared{% endif %}): {{ f.detail }}
-{{ cite(f.refs) }}
+- **{{ f.kind }}** (priority {{ f.priority }}{% if f.cleared %}, cleared{% endif %}): {{ f.detail }}{% if f.refs %}{{ "\n" }}{{ cite(f.refs) }}{% endif %}{{ "" }}
 {% else %}
 {% if not removed %}
 _No open flags._

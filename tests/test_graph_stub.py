@@ -45,7 +45,7 @@ class FixtureGraphSource:
 
     def _check(self, organiser_upn: str) -> None:
         if organiser_upn not in self._enabled:
-            raise GraphError(GraphErrorCode.GraphAccessToTranscriptsDisabled, organiser_upn)
+            raise GraphError(GraphErrorCode.ApplicationAccessPolicyMissing, organiser_upn)
 
     def list_new(
         self, organiser_upn: str, delta_link: str | None
@@ -71,15 +71,30 @@ def test_error_codes_enumerated() -> None:
         "GraphAccessToTranscriptsDisabled",
         "SpeakerAttributionNotAllowed",
         "DeltaFilterNotAllowed",
+        "ApplicationAccessPolicyMissing",
     }
     assert all(c.value == c.name for c in GraphErrorCode)
     assert set(GRAPH_ERROR_HINTS) == set(GraphErrorCode), "every code carries an IT hint"
 
-    err = GraphError(GraphErrorCode.DeltaFilterNotAllowed, "organiser x")
+    err = GraphError(GraphErrorCode.ApplicationAccessPolicyMissing, "organiser x")
     assert isinstance(err, PraktikaError)
-    assert err.code is GraphErrorCode.DeltaFilterNotAllowed
-    assert str(err).startswith("DeltaFilterNotAllowed: ")
-    assert "ApplicationAccessPolicy" in str(err) and "(organiser x)" in str(err)
+    assert err.code is GraphErrorCode.ApplicationAccessPolicyMissing
+    assert str(err).startswith("ApplicationAccessPolicyMissing: ")
+    assert "Grant-CsApplicationAccessPolicy" in str(err) and "(organiser x)" in str(err)
+    assert "never -Global" in str(err)
+
+    # the tenant switches name the exact cmdlet and parameter an administrator sets
+    hints = GRAPH_ERROR_HINTS
+    assert "-Identity Global -EnableGraphTranscriptAccess $true" in " ".join(
+        hints[GraphErrorCode.GraphAccessToTranscriptsDisabled].split()
+    )
+    assert (
+        "-Identity Global -EnableAttributedTranscripts $true"
+        in (hints[GraphErrorCode.SpeakerAttributionNotAllowed])
+    )
+    # a filter on a delta link is a defect in the poller, not a tenant setting
+    assert "defect" in hints[GraphErrorCode.DeltaFilterNotAllowed]
+    assert "ApplicationAccessPolicy" not in hints[GraphErrorCode.DeltaFilterNotAllowed]
 
     # a string code is coerced; an unknown code is rejected at construction
     assert (
@@ -111,7 +126,7 @@ def test_fixture_source_round_trip() -> None:
     # tenant conditions surface as the enumerated errors, not as generic failures
     with pytest.raises(GraphError) as info:
         source.list_new("someone.else@acme.test", None)
-    assert info.value.code is GraphErrorCode.GraphAccessToTranscriptsDisabled
+    assert info.value.code is GraphErrorCode.ApplicationAccessPolicyMissing
     with pytest.raises(GraphError) as info:
         source.fetch_vtt(ORGANISER, "M-20260916-a1b2", "tr-missing")
     assert info.value.code is GraphErrorCode.SpeakerAttributionNotAllowed

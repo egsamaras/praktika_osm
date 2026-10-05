@@ -15,27 +15,36 @@ from praktika.errors import PraktikaError
 
 
 class GraphErrorCode(StrEnum):
-    """Graph responses that mean a tenant setting or permission is missing, not a bug."""
+    """Graph responses a poller must recognise: a tenant setting or permission that is missing,
+    and one poller defect (``DeltaFilterNotAllowed``)."""
 
     GraphAccessToTranscriptsDisabled = "GraphAccessToTranscriptsDisabled"
     SpeakerAttributionNotAllowed = "SpeakerAttributionNotAllowed"
     DeltaFilterNotAllowed = "DeltaFilterNotAllowed"
+    ApplicationAccessPolicyMissing = "ApplicationAccessPolicyMissing"
 
 
-# Operator guidance per code: the exact tenant change a Teams administrator must make.
+# Operator guidance per code: the tenant change an administrator must make, or for a poller
+# defect, what to report.
 GRAPH_ERROR_HINTS: dict[GraphErrorCode, str] = {
     GraphErrorCode.GraphAccessToTranscriptsDisabled: (
         "Teams meeting configuration blocks Graph transcript access. A Teams administrator "
-        "must run Set-CsTeamsMeetingConfiguration -EnableGraphTranscriptAccess $true."
+        "must run Set-CsTeamsMeetingConfiguration -Identity Global "
+        "-EnableGraphTranscriptAccess $true."
     ),
     GraphErrorCode.SpeakerAttributionNotAllowed: (
         "Attributed transcripts are disabled for the tenant. A Teams administrator must run "
-        "Set-CsTeamsMeetingConfiguration -EnableAttributedTranscripts $true."
+        "Set-CsTeamsMeetingConfiguration -Identity Global -EnableAttributedTranscripts $true."
     ),
     GraphErrorCode.DeltaFilterNotAllowed: (
-        "The delta query filter is not permitted for this application access policy. A Teams "
-        "administrator must scope New-CsApplicationAccessPolicy / "
-        "Grant-CsApplicationAccessPolicy per organiser."
+        "Graph refused a filter on a delta link. A poller must follow delta links exactly as "
+        "Graph returns them, so this is a defect in the poller, not a tenant setting; "
+        "restarting the organiser's delta from scratch clears it."
+    ),
+    GraphErrorCode.ApplicationAccessPolicyMissing: (
+        "The app has no application access policy for this organiser. A Teams administrator "
+        "must add the organiser to the policy with Grant-CsApplicationAccessPolicy (per user "
+        "or pilot group, never -Global); changes take up to 30 minutes to reach Graph."
     ),
 }
 

@@ -9,6 +9,7 @@ recorded explicitly in the consent record. Nothing here can skip ``consent.gate`
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
@@ -30,6 +31,7 @@ from praktika.models import (
     MeetingType,
     Platform,
 )
+from praktika.store.search import normalise_ar
 from praktika.stt.router import require_language
 
 METHODS = ("spoken", "chat", "teams_transcription", "placard")
@@ -94,13 +96,45 @@ ExternalOpt = Annotated[
     ),
 ]
 
-#: Title words that suggest a pilot exclusion; the organiser is warned and must confirm.
+#: Title words that suggest a pilot exclusion; the organiser is warned and must confirm. Arabic
+#: words are written as ``normalise_ar`` leaves them (bare alef, haa for taa marbuta).
 _TITLE_HINTS: dict[str, tuple[str, ...]] = {
-    "board": ("board", "مجلس الإدارة"),
-    "hr": ("grievance", "disciplinary", "appraisal", "hr ", "تظلم", "تأديب", "الموارد البشرية"),
-    "customer_call": ("customer", "client call", "عميل"),
-    "regulator": ("central bank", "supervisory", "regulator", "auditor", "المركزي", "مدقق"),
+    "board": ("board", "مجلس الادار", "مجلس ادار"),
+    "hr": ("grievance", "disciplinary", "appraisal", "hr", "تظلم", "تاديب", "الموارد البشريه"),
+    "customer_call": ("customer", "client call", "عميل", "عملاء"),
+    "regulator": (
+        "central bank", "supervisory", "regulator", "auditor", "المركزي", "مدقق",
+    ),
     "legal_privileged": ("privileged", "litigation", "امتياز"),
+}  # fmt: skip
+_LATIN = re.compile(r"[a-z]")
+#: Word breaks inside camelCase and acronym-led titles ("BoardMeeting", "HRReview"), but not
+#: before an acronym's plural ("KPIs").
+_CAMEL = re.compile(r"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z]{2})")
+#: Hints that begin common words when run on ("auditorium", "hrs"), so they must also end at a
+#: word break.
+_ENDS_AT_A_BREAK = frozenset({"auditor", "hr"})
+
+
+def _hint_pattern(word: str) -> re.Pattern[str]:
+    """A Latin-script hint must start a word: no Latin letter before it, so 'board' never matches
+    'dashboard', 'keyboard' or 'onboarding'. Run-on file stems and digits still match
+    ('boardmeeting', 'Q4Board', 'Board_Meeting', 'الـBoard'). The few hints in
+    ``_ENDS_AT_A_BREAK`` must also end at one (plural allowed, except for 'hr', so '2 hrs' is not
+    HR), and 'hr' may not follow a digit ('3hr'). An Arabic hint matches anywhere, because Arabic
+    attaches prefixes such as و and ب to the word itself."""
+    if not _LATIN.search(word):
+        return re.compile(re.escape(word))
+    body = re.escape(word).replace(r"\ ", r"[\s_-]+")
+    before = r"(?<![a-z0-9])" if word == "hr" else r"(?<![a-z])"
+    if word not in _ENDS_AT_A_BREAK:
+        return re.compile(before + body)
+    plural = "s?" if len(word) > 3 else ""
+    return re.compile(rf"{before}{body}{plural}(?![a-z])")
+
+
+_HINT_PATTERNS: dict[str, tuple[re.Pattern[str], ...]] = {
+    key: tuple(_hint_pattern(normalise_ar(w)) for w in words) for key, words in _TITLE_HINTS.items()
 }
 
 
@@ -197,8 +231,8 @@ def meeting_tags(
 def title_hints(title: str) -> list[str]:
     """Exclusion keys a meeting title hints at (``grievance`` -> ``hr``); a warning, not a
     refusal, because the organiser's attestation and tags decide."""
-    low = f" {title.lower()} "
-    return sorted(key for key, words in _TITLE_HINTS.items() if any(w in low for w in words))
+    text = normalise_ar(_CAMEL.sub(" ", title))
+    return sorted(key for key, pats in _HINT_PATTERNS.items() if any(p.search(text) for p in pats))
 
 
 def warn_title(title: str) -> None:

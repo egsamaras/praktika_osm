@@ -85,28 +85,149 @@ def test_markdown_sections_in_order(tmp_settings: Settings) -> None:
     assert "sha256 " + "a" * 64 in text and "Rendered at: " + NOW.isoformat() in text
 
 
-def test_every_citation_is_on_its_own_line(tmp_settings: Settings) -> None:
-    """A topic with several citations, a question raised by someone and a risk with a mitigation
-    each put every citation on a line of its own (the templates run with trim_blocks, which once
-    ran them together)."""
-    from praktika.models import OpenQuestion, Risk, TopicSummary
-
-    t = make_transcript("en")
-    minutes = base_minutes(
-        topics=[TopicSummary(title="Pilot", summary="Agreed.", key_points=["x"],
-                             refs=[seg_ref(t, "S0001"), seg_ref(t, "S0002"), seg_ref(t, "S0003")])],
-        open_questions=[OpenQuestion(id="Q1", question="Keep audio?", raised_by="F. Khalid",
-                                     owner=None, refs=[seg_ref(t, "S0004")])],
-        risks=[Risk(id="R1", description="Names", severity="medium", owner=None,
-                    mitigation="redact", refs=[seg_ref(t, "S0005")])],
-    )  # fmt: skip
-    text = render_markdown(minutes, base_meeting(), t, settings=tmp_settings, now=NOW)
+def _assert_one_citation_per_line(text: str) -> int:
+    """Every citation sits on a line of its own, and every gloss on the line after it; returns
+    how many citation lines there are."""
     lines = text.splitlines()
-    for seg in ("S0001", "S0002", "S0003", "S0004", "S0005"):
-        cited = [line for line in lines if f"[{seg} " in line]
-        assert cited and all(line.startswith("  - [") for line in cited), (seg, cited)
-    assert any(line.endswith("(raised by F. Khalid)") for line in lines)
-    assert any(line.endswith("mitigation: redact") for line in lines)
+    cited = [line for line in lines if "- [S0" in line]
+    for line in cited:
+        assert line.startswith("  - [S0") and line.count("[S0") == 1, line
+    for line in lines:
+        if "Gloss (EN):" in line:
+            assert line.startswith("    - Gloss (EN): ") and "[S0" not in line, line
+    return len(cited)
+
+
+def _assert_tight(text: str, heading: str) -> None:
+    """No blank line between the items of the list under ``heading`` (a blank line makes
+    Markdown render the whole list loose)."""
+    block: list[str] = []
+    for line in text.split(heading + "\n", 1)[1].lstrip("\n").splitlines():
+        if line and not line.startswith(("- ", "  ")):
+            break
+        block.append(line)
+    while block and not block[-1]:
+        block.pop()
+    assert block and "" not in block, (heading, block)
+
+
+def _cite_twice(m: Any) -> Any:
+    """``m`` with every cited item citing its segments twice, so a run-together shows."""
+
+    def doubled(items: list[Any]) -> list[Any]:
+        return [i.model_copy(update={"refs": i.refs + i.refs}) if i.refs else i for i in items]
+
+    fields = ["topics", "decisions", "actions", "open_questions", "risks", "flags"]
+    fields += [
+        f
+        for f in ("matters_arising", "my_commitments", "their_commitments")
+        if f in type(m).model_fields
+    ]
+    return m.model_copy(update={f: doubled(getattr(m, f)) for f in fields})
+
+
+def _every_kind_of_item(kind: str, t: Transcript) -> Any:
+    """Minutes of ``kind`` with every cited item type: several citations, an Arabic quote with
+    its gloss, items without citations, matters arising and commitments."""
+    from praktika.models import (
+        MancomMinutes,
+        MatterArising,
+        OneToOneMinutes,
+        OpenQuestion,
+        Risk,
+        TopicSummary,
+    )
+
+    ar = next(s.id for s in t.segments if s.language == "ar")
+    base = base_minutes(
+        topics=[
+            TopicSummary(title="Pilot", summary="Agreed.",
+                         key_points=["Volunteers only", "October"],
+                         refs=[seg_ref(t, "S0001"), seg_ref(t, ar), seg_ref(t, "S0003")]),
+            TopicSummary(title="Budget", summary="Noted.", key_points=[],
+                         refs=[seg_ref(t, "S0002")]),
+        ],
+        decisions=[Decision(id="D1", statement="Volunteers only", kind="approved",
+                            decided_by="F. Khalid", refs=[seg_ref(t, ar)])],
+        open_questions=[
+            OpenQuestion(id="Q1", question="Keep audio?", raised_by="F. Khalid", owner=None,
+                         refs=[seg_ref(t, "S0004"), seg_ref(t, ar)]),
+            OpenQuestion(id="Q2", question="Who signs?", raised_by=None, owner=None, refs=[]),
+            OpenQuestion(id="Q3", question="When?", raised_by="L. Farouk", owner=None, refs=[]),
+        ],
+        risks=[
+            Risk(id="R1", description="Names", severity="medium", owner=None,
+                 mitigation="redact", refs=[seg_ref(t, ar)]),
+            Risk(id="R2", description="Cost", severity="low", owner=None, mitigation=None,
+                 refs=[]),
+            Risk(id="R3", description="Time", severity="low", owner=None, mitigation="plan",
+                 refs=[]),
+        ],
+        flags=[
+            Flag(kind="name_to_verify", detail="Karim", priority=2, refs=[seg_ref(t, "S0002")]),
+            Flag(kind="number_to_verify", detail="275,000", priority=2),
+            Flag(kind="number_to_verify", detail="300,000", priority=2),
+        ],
+    )  # fmt: skip
+    if kind == "general":
+        return base
+    data = base.model_dump()
+    data["meeting_type"] = kind
+    if kind == "mancom":
+        data["matters_arising"] = [
+            MatterArising(previous_action_id="A0", status="closed", note="Done",
+                          refs=[seg_ref(t, ar), seg_ref(t, "S0001")]).model_dump(),
+            MatterArising(previous_action_id="A9", status="open", note="Pending",
+                          refs=[]).model_dump(),
+            MatterArising(previous_action_id="A8", status="overdue", note="Late",
+                          refs=[]).model_dump(),
+        ]  # fmt: skip
+        return MancomMinutes.model_validate(data)
+    action = base.actions[0]
+    data["my_commitments"] = [
+        action.model_copy(update={"refs": [seg_ref(t, ar), seg_ref(t, "S0002")]}).model_dump()
+    ]
+    data["their_commitments"] = [
+        action.model_copy(update={"id": "A2", "refs": [seg_ref(t, "S0003")]}).model_dump()
+    ]
+    return OneToOneMinutes.model_validate(data)
+
+
+@pytest.mark.parametrize("kind", ["general", "mancom", "one_to_one"])
+def test_every_citation_is_on_its_own_line(kind: str, tmp_settings: Settings) -> None:
+    """In every template each citation, and each gloss, is on a line of its own (the templates
+    run with trim_blocks, which once ran them together); an item without citations adds no
+    blank line, so its list stays tight; and a topic's citations follow an 'Evidence:' line, so
+    Markdown does not nest them under the topic's last key point."""
+    t = make_transcript("mixed")
+    m = _every_kind_of_item(kind, t)
+    text = render_markdown(m, base_meeting(), t, settings=tmp_settings, now=NOW)
+    assert _assert_one_citation_per_line(text) >= 10
+    lines = text.splitlines()
+    assert "    - Gloss (EN): Keep audio?" in lines and "    - Gloss (EN): Names" in lines
+    assert "- **Q1** Keep audio? (raised by F. Khalid)" in lines
+    assert "- **R1** [medium] Names — mitigation: redact" in lines
+    for heading in ("## Open questions", "## Risks", "## Reviewer flags"):
+        _assert_tight(text, heading)
+    i = lines.index("- October")
+    assert lines[i + 1 : i + 3] == ["", "Evidence:"] and lines[i + 3].startswith("  - [S0001 ")
+    j = lines.index("Noted.")
+    assert lines[j + 1] == "" and lines[j + 2].startswith("  - [S0002 "), "no key points"
+    if kind == "mancom":
+        _assert_tight(text, "## Matters arising")
+        assert "- A0 — **closed**: Done" in lines and "    - Gloss (EN): Done" in lines
+    if kind == "one_to_one":
+        assert "    - Gloss (EN): Draft the notice" in lines
+
+
+@pytest.mark.parametrize("gm", golden.load_all(), ids=lambda g: g.name)
+def test_golden_minutes_put_every_citation_on_its_own_line(
+    gm: golden.GoldenMeeting, tmp_settings: Settings
+) -> None:
+    """The same for the golden meetings, with every item, commitments included, citing twice."""
+    m = _cite_twice(golden.minutes_from_playback(gm))
+    text = render_markdown(m, gm.meeting, gm.transcript, settings=tmp_settings, now=NOW)
+    assert _assert_one_citation_per_line(text) > 0
 
 
 def test_draft_watermark_present_absent(tmp_settings: Settings) -> None:
