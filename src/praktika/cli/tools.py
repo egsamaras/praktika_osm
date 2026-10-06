@@ -20,6 +20,7 @@ import typer
 from praktika import consent
 from praktika.audit import chain_report
 from praktika.cli import context as ctx
+from praktika.config import hide_credentials
 from praktika.errors import LLMError, PraktikaError
 from praktika.eval import checks
 from praktika.eval import golden as golden_mod
@@ -127,11 +128,24 @@ def audit_tail(
 @config_app.command("show")
 @ctx.guarded
 def config_show() -> None:
-    """Print the effective settings as JSON (anything secret-like is masked)."""
+    """Print the effective settings as JSON (anything secret-like is masked, and so is the user
+    name and password of any URL)."""
     settings = ctx.load_settings()
     data = settings.model_dump(mode="json")
-    masked = {k: ("***" if SECRET_RE.search(k) and v else v) for k, v in data.items()}
+    masked = {k: "***" if SECRET_RE.search(k) and v else _scrub(v) for k, v in data.items()}
     ctx.console.print(json.dumps(masked, indent=2, ensure_ascii=False))
+
+
+def _scrub(value: Any) -> Any:
+    """``value`` with ``hide_credentials`` applied to every string in it, lists and maps
+    included."""
+    if isinstance(value, str):
+        return hide_credentials(value)
+    if isinstance(value, list):
+        return [_scrub(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _scrub(v) for k, v in value.items()}
+    return value
 
 
 class PlaybackLLM:

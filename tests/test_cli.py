@@ -1208,3 +1208,51 @@ def test_retention_now_without_an_offset_is_utc() -> None:
     from praktika.cli import ops
 
     assert ops._dt("2026-10-06T10:00:00").tzinfo is UTC
+
+
+def test_doctor_and_config_show_never_print_a_url_password(
+    cli_env: Settings, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A URL setting can carry a user and password; neither command prints them."""
+    leaky = Settings(
+        _env_file=None,
+        **{
+            **cli_env.model_dump(),
+            "llm_provider": "ollama",
+            "llm_base_url": "http://svc:s3cret@127.0.0.1:1",
+        },
+    )
+    monkeypatch.setattr(ctx, "load_settings", lambda: leaky)
+    for args in (["doctor"], ["doctor", "--json"], ["config", "show"]):
+        result = invoke(*args)
+        assert "s3cret" not in result.output and "svc:" not in result.output, args
+        assert "***@127.0.0.1:1" in result.output, (args, result.output)
+
+    # at INFO the HTTP library logs every request's full URL; the log filter removes the password
+    import httpx
+
+    from praktika.cli import doctor as doctor_mod
+
+    def fake_ollama(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"models": [], "parameters": ""})
+
+    monkeypatch.setattr(
+        doctor_mod,
+        "http_client",
+        lambda s: httpx.Client(transport=httpx.MockTransport(fake_ollama)),
+    )
+    logged = invoke("--log-level", "INFO", "doctor")
+    assert "HTTP Request: GET http://***@127.0.0.1:1/api/tags" in logged.output, logged.output
+    assert "s3cret" not in logged.output
+
+    # a URL with a password inside a list setting is masked by config show too
+    listed = Settings(
+        _env_file=None,
+        **{
+            **cli_env.model_dump(),
+            "allowed_hosts": ["localhost", "127.0.0.1", "http://h:pw@127.0.0.1"],
+        },
+    )
+    monkeypatch.setattr(ctx, "load_settings", lambda: listed)
+    shown = invoke("config", "show")
+    assert "h:pw" not in shown.output and "http://***@127.0.0.1" in shown.output

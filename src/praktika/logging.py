@@ -72,7 +72,25 @@ def configure_logging(json: bool = False, level: str = "INFO") -> None:
         cache_logger_on_first_use=False,
     )
     logging.basicConfig(level=numeric, stream=sys.stderr, format="%(message)s", force=True)
+    for handler in logging.getLogger().handlers:
+        handler.addFilter(_HideCredentials())
     _CONFIGURED = True
+
+
+class _HideCredentials(logging.Filter):
+    """Remove the user name and password of any URL from every log line, ours and the libraries'
+    (the HTTP library logs each request's full URL at INFO; a setting's URL can carry them)."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        from praktika.config import hide_credentials  # here, so importing logging stays light
+
+        message = record.getMessage()
+        cleaned = hide_credentials(message)
+        if cleaned != message:
+            record.msg, record.args = cleaned, ()
+        if record.exc_info and not record.exc_text:
+            record.exc_text = hide_credentials(logging.Formatter().formatException(record.exc_info))
+        return True
 
 
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:

@@ -22,6 +22,7 @@ from __future__ import annotations
 import ipaddress
 import json
 import os
+import re
 import sys
 from collections.abc import Mapping
 from fnmatch import fnmatchcase
@@ -158,6 +159,18 @@ def _same_address(host: str, pattern: str) -> bool:
         return ipaddress.ip_address(host) == ipaddress.ip_address(pattern)
     except ValueError:
         return host == pattern
+
+
+#: A URL's scheme and its user information, up to the last ``@`` of the authority (a password may
+#: hold a raw ``@``, which URL parsers resolve the same way).
+_USERINFO = re.compile(r"(?i)(?<![a-z0-9+.\-])([a-z][a-z0-9+.\-]*://)[^/?#\s]*@")
+
+
+def hide_credentials(text: str) -> str:
+    """``text`` with the user name and password of every URL in it replaced by ``***``. A
+    setting's URL can carry them, and ``doctor``, ``config show`` and every log line (the HTTP
+    library logs each request's full URL at INFO) reach the terminal and the journal."""
+    return _USERINFO.sub(r"\1***@", text)
 
 
 def _parse_host_list(v: Any) -> Any:

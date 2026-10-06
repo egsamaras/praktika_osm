@@ -36,6 +36,10 @@ All notable changes to this project are recorded here. The format follows
   "boardmeeting", "Q4Board", "BoardMeeting") and Arabic prefixes attached to a word still do.
   "HR" is now recognised next to punctuation and in camelCase ("HR: policy", "HR-Finance",
   "HRMeeting"), and common Arabic spelling variants now warn as well.
+* `praktika doctor` (plain and `--json`) and `praktika config show` printed a URL setting with any
+  user name and password in it, and at `--log-level INFO` every command logged each HTTP
+  request's full URL; the user name and password of any URL are now replaced by `***` in their
+  output and in every log line.
 * An egress error printed the whole URL of the setting, including any password in it; it now
   names the setting and the host. A setting that fails validation is reported by name and reason,
   without the value given,

@@ -346,3 +346,36 @@ def test_a_url_with_a_password_is_never_printed(tmp_path: Path) -> None:
         settings(allowed_hosts='["unclosed', llm_base_url="http://127.0.0.1:11434")
     shown = ctx.describe_invalid(bad.value)
     assert shown.startswith("allowed_hosts:") and "unclosed" not in shown
+
+
+def test_hide_credentials_removes_only_the_user_and_password() -> None:
+    from praktika.config import hide_credentials
+
+    assert hide_credentials("at http://svc:s3cret@127.0.0.1:1/api: refused") == (
+        "at http://***@127.0.0.1:1/api: refused"
+    )
+    assert hide_credentials("a https://u@x.test and HTTP://a:b@y.test/p?q=1") == (
+        "a https://***@x.test and HTTP://***@y.test/p?q=1"
+    )
+    assert hide_credentials("http://u:p@ss@host/x") == "http://***@host/x", "a raw @ in a password"
+    plain = "mail f.khalid@example.test; url http://x.test/a@b; http://x.test:8080/"
+    assert hide_credentials(plain) == plain
+
+
+def test_every_log_line_loses_url_passwords(capsys: pytest.CaptureFixture[str]) -> None:
+    """The HTTP library logs each request's full URL at INFO, and our own lines may carry one."""
+    import logging
+
+    from praktika.logging import configure_logging, get_logger
+
+    try:
+        configure_logging(level="INFO")
+        logging.getLogger("httpx").info(
+            "HTTP Request: %s %s", "GET", "http://svc:s3cret@127.0.0.1:1/api/tags"
+        )
+        get_logger("praktika.test").info("probe", url="https://u:pw@llm.example.test/v1")
+        err = capsys.readouterr().err
+    finally:
+        configure_logging(level="WARNING")
+    assert "s3cret" not in err and "u:pw" not in err
+    assert "http://***@127.0.0.1:1/api/tags" in err and "https://***@llm.example.test" in err

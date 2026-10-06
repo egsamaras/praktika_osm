@@ -26,7 +26,7 @@ from dotenv import dotenv_values
 
 from praktika.audit import chain_report
 from praktika.cli import context as ctx
-from praktika.config import ENV_FILE_VAR, Settings, env_file_path
+from praktika.config import ENV_FILE_VAR, Settings, env_file_path, hide_credentials
 from praktika.errors import ConfigError, EgressError, ModelRegisterMismatch, PraktikaError
 from praktika.llm import prompts as pr
 from praktika.logging import get_logger
@@ -414,7 +414,13 @@ def check_agent(settings: Settings) -> Check:
 def _checked(name: str, probe: Callable[[], Check]) -> Check:
     """Run one check; a file-system error it did not expect (for example a data directory
     under a home this account cannot search) becomes that check's ``fail`` line, so doctor
-    always prints every check instead of stopping at a traceback."""
+    always prints every check instead of stopping at a traceback. Any URL in the result loses
+    its user name and password (``config.hide_credentials``), whatever the check printed."""
+    check = _probe(name, probe)
+    return Check(check.name, check.status, hide_credentials(check.detail))
+
+
+def _probe(name: str, probe: Callable[[], Check]) -> Check:
     try:
         return probe()
     except OSError as exc:
