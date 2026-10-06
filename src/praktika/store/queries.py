@@ -106,22 +106,39 @@ class QueryMixin:
         self._update_meeting(meeting_id, None, legal_hold=on)
 
     def dsar_find(self, participant: str) -> list[str]:
-        """Meeting ids whose roster (name, alias or UPN) or transcript speakers match
-        ``participant`` case-insensitively. Names match as substrings; aliases and UPNs exactly."""
+        """Meeting ids in which ``participant`` appears (see ``dsar_matches``)."""
+        return [mid for mid, _ in self.dsar_matches(participant)]
+
+    def dsar_matches(self, participant: str) -> list[tuple[str, str]]:
+        """``(meeting id, why)`` for every meeting whose organiser, roster (name, alias or UPN),
+        transcript speakers or title match ``participant`` case-insensitively; ``why`` is
+        ``organiser``, ``roster``, ``speaker`` or ``title``, the first that matched. Roster names
+        match as substrings; aliases and UPNs exactly (the organiser is a UPN, so a meeting
+        declared on someone's behalf is found too); a title only for a full name, as whole words
+        (``search.mentions``), since a title often names the people the meeting is about."""
+        from praktika.store.search import mentions
+
         needle = participant.strip().lower()
-        found: list[str] = []
+        found: list[tuple[str, str]] = []
         for meeting in self.list_meetings() if needle else []:
-            hit = any(
+            why = ""
+            if meeting.organiser.lower() == needle:
+                why = "organiser"
+            elif any(
                 needle in a.name.lower()
                 or needle in {x.lower() for x in a.aliases}
                 or (a.upn or "").lower() == needle
                 for a in meeting.roster
-            )
-            if not hit:
+            ):
+                why = "roster"
+            else:
                 t = self.get_transcript(meeting.id)
-                hit = t is not None and any(needle == s.speaker.lower() for s in t.segments)
-            if hit:
-                found.append(meeting.id)
+                if t is not None and any(needle == s.speaker.lower() for s in t.segments):
+                    why = "speaker"
+                elif mentions(meeting.title, participant):
+                    why = "title"
+            if why:
+                found.append((meeting.id, why))
         return found
 
     # ------------------------------------------------------------------ search index

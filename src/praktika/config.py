@@ -19,6 +19,7 @@ system rules. An allow-list entry must contain a literal host label: ``"*"`` is 
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import os
 import sys
@@ -130,12 +131,33 @@ def pattern_has_literal_label(pattern: str) -> bool:
 def host_allowed(host: str | None, allowed_hosts: list[str]) -> bool:
     """Return True when ``host`` matches any allow-list entry (case-insensitive fnmatch glob).
 
-    ``None`` or an empty host (for example a relative URL) is never allowed.
+    ``None`` or an empty host (for example a relative URL) is never allowed. An IPv6 literal
+    (``[fd00::10]`` in a URL) matches an entry naming that address with or without brackets, in
+    short or long form, compared as an address (fnmatch would read the brackets as a character
+    class); an entry with a glob character (``*fd00::*``) is still a glob.
     """
     if not host:
         return False
-    h = host.lower()
-    return any(fnmatchcase(h, pattern.lower()) for pattern in allowed_hosts)
+    h = _unbracket(host.lower())
+    for pattern in allowed_hosts:
+        p = _unbracket(pattern.lower())
+        literal_ipv6 = ":" in p and not set(p) & set("*?[")
+        if _same_address(h, p) if literal_ipv6 else fnmatchcase(h, p):
+            return True
+    return False
+
+
+def _unbracket(value: str) -> str:
+    """``[fd00::10]`` -> ``fd00::10``; anything else (a glob's ``[ab]`` class included) as is."""
+    return value[1:-1] if value.startswith("[") and value.endswith("]") and ":" in value else value
+
+
+def _same_address(host: str, pattern: str) -> bool:
+    """IPv6 literals compared as addresses, so the long and short forms of one match."""
+    try:
+        return ipaddress.ip_address(host) == ipaddress.ip_address(pattern)
+    except ValueError:
+        return host == pattern
 
 
 def _parse_host_list(v: Any) -> Any:
@@ -239,10 +261,12 @@ class Settings(BaseSettings):
         """Raise ``EgressError`` unless the URL host matches ``allowed_hosts`` (glob)."""
         if v is None:
             return v
-        allowed = info.data.get("allowed_hosts", [])
-        if not host_allowed(v.host, allowed):
+        if "allowed_hosts" not in info.data:  # allowed_hosts itself is invalid: reported there
+            return v
+        allowed = info.data["allowed_hosts"]
+        if not host_allowed(v.host, allowed):  # name the host only: a URL may carry a password
             raise EgressError(
-                f"{info.field_name}={v} targets host {v.host!r}, not in allowed_hosts {allowed}"
+                f"{info.field_name} targets host {v.host!r}, not in allowed_hosts {allowed}"
             )
         return v
 
@@ -252,7 +276,7 @@ class Settings(BaseSettings):
         for name in _URL_FIELDS:
             url = getattr(self, name)
             if url is not None and not host_allowed(url.host, self.allowed_hosts):
-                raise EgressError(f"{name}={url} targets host {url.host!r} outside the allow-list")
+                raise EgressError(f"{name} targets host {url.host!r} outside the allow-list")
 
     def http_client(self, *, timeout: float | None = None) -> httpx.Client:
         """Return an ``httpx.Client`` whose transport refuses any host outside ``allowed_hosts``.

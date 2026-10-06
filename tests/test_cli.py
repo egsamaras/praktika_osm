@@ -785,7 +785,7 @@ def test_serve_builds_the_review_app(cli_env: Settings, monkeypatch: pytest.Monk
 def test_dsar_find_export_delete(cli_env: Settings, tmp_path: Path) -> None:
     mid = ingest_vtt(cli_env)
     found = invoke("dsar", "find", "--participant", "Omar")
-    assert found.exit_code == 0 and mid in found.output
+    assert found.exit_code == 0 and f"{mid}  (roster)" in found.output
     assert "No meetings" in invoke("dsar", "find", "--participant", "Nobody Here").output
     out = tmp_path / "bundle.json"
     result = invoke("dsar", "export", "--participant", "Omar", "--out", str(out))
@@ -1183,3 +1183,28 @@ def test_disk_encryption_on_linux_reads_the_data_volume(
     monkeypatch.setattr(doctor, "run_cmd", probe("lvm"))
     plain = doctor.check_disk_encryption(tmp_settings)
     assert plain.status == "warn" and "confirm" in plain.detail
+
+
+def test_dsar_find_says_why_a_meeting_matched(cli_env: Settings) -> None:
+    """A title match shows the title, so a false match is visible before anything is erased;
+    a single word never matches a title."""
+    result = invoke(
+        "ingest", str(VTT_EN), "--title", "1:1 with Layla Farouk", "--lang", "en", *GATE
+    )
+    assert result.exit_code == 0, result.output
+    mid = store_of(cli_env).list_meetings()[0].id
+    found = invoke("dsar", "find", "--participant", "Layla Farouk")
+    assert f"{mid}  (title: 1:1 with Layla Farouk)" in found.output
+    assert "No meetings found." in invoke("dsar", "find", "--participant", "Layla").output
+    assert (
+        f"{mid}  (organiser)"
+        in invoke("dsar", "find", "--participant", "f.khalid@acme.test").output
+    )
+
+
+def test_retention_now_without_an_offset_is_utc() -> None:
+    from datetime import UTC
+
+    from praktika.cli import ops
+
+    assert ops._dt("2026-10-06T10:00:00").tzinfo is UTC

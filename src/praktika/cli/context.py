@@ -98,6 +98,15 @@ def checked_env_file() -> Path:
         fail(str(exc))
 
 
+def describe_invalid(exc: ValidationError) -> str:
+    """Each invalid setting and why, never its value: a value can be a secret (a URL with a
+    password in it), and this text reaches the terminal and the journal."""
+    return "; ".join(
+        f"{'.'.join(str(part) for part in err['loc']) or 'settings'}: {err['msg']}"
+        for err in exc.errors(include_url=False, include_input=False)
+    )
+
+
 def load_settings() -> Settings:
     """``Settings`` from the environment and ``checked_env_file()`` (never a ``.env`` in the
     working directory); configuration errors exit 1, as does a prompts directory or glossary
@@ -108,7 +117,7 @@ def load_settings() -> Settings:
     except EgressError as exc:
         fail(f"egress allow-list violation: {exc}")
     except ValidationError as exc:
-        fail(f"invalid configuration: {exc}")
+        fail(f"invalid configuration: {describe_invalid(exc)}")
     missing = [
         f"{name}={path}"
         for name, path in (

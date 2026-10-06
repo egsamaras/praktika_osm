@@ -11,6 +11,9 @@ All notable changes to this project are recorded here. The format follows
 * A single-word glossary misrendering now matches only exactly, never fuzzily: one letter away is
   where names and ordinary words are ("Deepia" turned "Deepika" into "DPIA"). List every spelling
   you see. Multi-word misrenderings are still matched fuzzily.
+* `praktika dsar find|export|delete` also match a meeting's organiser (UPN) and a full name of two
+  words or more in its title (as whole words; a single word such as "May" never matches a title).
+  `dsar find`, and the confirmation of `dsar delete`, show why each meeting matched.
 * `glossary.load` refuses more single-word misrenderings: Q1 to Q4, Dale, Del, Jenny, Pratik,
   Pratika, Practice, Practices, Practical, Team's and Whisperer. A glossary of your own that lists
   any of them stops ingest with an error until you replace it with a multi-word pattern; the
@@ -33,6 +36,13 @@ All notable changes to this project are recorded here. The format follows
   "boardmeeting", "Q4Board", "BoardMeeting") and Arabic prefixes attached to a word still do.
   "HR" is now recognised next to punctuation and in camelCase ("HR: policy", "HR-Finance",
   "HRMeeting"), and common Arabic spelling variants now warn as well.
+* An egress error printed the whole URL of the setting, including any password in it; it now
+  names the setting and the host. A setting that fails validation is reported by name and reason,
+  without the value given,
+  and a malformed `PRAKTIKA_ALLOWED_HOSTS` is reported as itself rather than as an egress error of
+  another setting.
+* An allow-list entry naming an IPv6 address (`fd00::10` or `[fd00::10]`, short or long form) now
+  matches a URL to that address; before, only a glob such as `*fd00::*` could, and globs still do.
 * The Graph error hint for `DeltaFilterNotAllowed` told administrators to change the application
   access policy; a filter on a delta link is a defect in the poller. A missing access policy has
   its own code, `ApplicationAccessPolicyMissing`, and the tenant hints name `-Identity Global`.

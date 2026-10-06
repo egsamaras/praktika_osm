@@ -297,7 +297,16 @@ def test_dsar_find_by_participant(store: SqliteStore) -> None:
     store.save_transcript(t, delete_after=None)
     assert store.dsar_find("khalid") == [a]
     assert store.dsar_find("فيصل") == [a]
-    assert store.dsar_find("f.khalid@acme.test") == [a]
+    # F. Khalid organised all three meetings: as organiser they are a data subject in each
+    assert sorted(store.dsar_find("f.khalid@acme.test")) == [a, b, c]
+    assert store.dsar_matches("f.khalid@acme.test")[0][1] == "organiser"
+    store.save_meeting(meeting("M-20260916-d004", organiser="l.farouk@acme.test"))
+    assert store.dsar_find("L.Farouk@acme.test") == ["M-20260916-d004"]
+    # a full name in a title is found; a single word never is ('May', 'Ali', 'Bond')
+    store.save_meeting(meeting("M-20260916-d005", title="Credit review - Fatima Al Zayani"))
+    store.save_meeting(meeting("M-20260916-d006", title="ALCO May 2026"))
+    assert ("M-20260916-d005", "title") in store.dsar_matches("Fatima al-Zayani")
+    assert "M-20260916-d006" not in store.dsar_find("May")
     assert store.dsar_find("Layla") == [b]
     assert store.dsar_find("ليلى") == [b]
     assert store.dsar_find("rania haddad") == [c]

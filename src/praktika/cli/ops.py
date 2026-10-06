@@ -36,9 +36,11 @@ dsar_app = typer.Typer(help="DPO route: locate, export or delete a participant's
 
 
 def _dt(value: str | None) -> datetime | None:
+    """An ISO time; a time without an offset is read as UTC, as everywhere else."""
     if not value:
         return None
-    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
 
 
 @retention_app.command("run")
@@ -434,10 +436,20 @@ ParticipantOpt = Annotated[str, typer.Option("--participant", help="Name, alias 
 @dsar_app.command("find")
 @ctx.guarded
 def dsar_find(participant: ParticipantOpt) -> None:
-    """List meeting ids in which the participant appears (roster or transcript speakers)."""
+    """List the meetings in which the participant appears (organiser, roster, transcript
+    speakers, or a full name in the title) and why each matched."""
     rt = ctx.open_runtime()
-    ids = rt.store.dsar_find(participant)
-    ctx.console.print("\n".join(ids) if ids else "No meetings found.")
+    lines = [_why(rt, mid, why) for mid, why in rt.store.dsar_matches(participant)]
+    ctx.console.print("\n".join(lines) if lines else "No meetings found.")
+
+
+def _why(rt: ctx.Runtime, meeting_id: str, why: str) -> str:
+    """A matched meeting and why it matched; a title match shows the title, so a false match
+    is visible before anything is exported or erased."""
+    if why == "title":
+        meeting = rt.store.get_meeting(meeting_id)
+        return f"{meeting_id}  (title: {meeting.title if meeting else '?'})"
+    return f"{meeting_id}  ({why})"
 
 
 @dsar_app.command("export")
@@ -494,7 +506,8 @@ def dsar_delete(
     half-way with some meetings gone and others untouched.
     """
     rt = ctx.open_runtime()
-    ids = rt.store.dsar_find(participant)
+    matches = rt.store.dsar_matches(participant)
+    ids = [mid for mid, _ in matches]
     if not ids:
         ctx.console.print("No meetings found.")
         return
@@ -505,7 +518,8 @@ def dsar_delete(
             f"{len(held)} of {len(ids)} meeting(s) under legal hold: {', '.join(held)}; "
             "deletion refused (nothing was erased)"
         )
-    if not yes and not typer.confirm(f"Erase {len(ids)} meeting(s): {', '.join(ids)}?"):
+    what = ", ".join(_why(rt, mid, why) for mid, why in matches)
+    if not yes and not typer.confirm(f"Erase {len(ids)} meeting(s): {what}?"):
         raise typer.Exit(ctx.EXIT_REFUSED)
     now = datetime.now(UTC)
     for mid in ids:

@@ -46,6 +46,35 @@ def normalise_ar(text: str) -> str:
     return out.lower()
 
 
+_ARABIC_LETTER = re.compile("[\u0600-\u06ff]")
+#: A conjunction or preposition Arabic attaches to a name ('وعلي حسن'); not the article, which
+#: would turn a first name into someone else's family name ('العلي').
+_AR_PREFIX = "[وفبلك]?"
+_NAME_PARTS = re.compile(r"[\s-]+")
+
+
+def _fold(text: str) -> str:
+    """``normalise_ar`` without folding alef maqsura into yaa: 'على' (on) must stay apart from
+    'علي' (Ali)."""
+    out = _TASHKEEL.sub("", text)
+    out = _ALEF.sub("ا", out).replace("ة", "ه")
+    out = out.translate(_ARABIC_INDIC).translate(_EXTENDED_INDIC)
+    return out.lower()
+
+
+def mentions(text: str | None, name: str) -> bool:
+    """Whether a full name of two words or more appears in ``text`` as whole words, a space or a
+    hyphen between them in either: 'Ali Hassan' is found in '1:1 with Ali Hassan', 'Fatima Al
+    Zayani' in 'Fatima al-Zayani'. A single word is never matched, because 'Ali', 'May' or
+    'Bond' would match ordinary titles; a request needs the full name (or the UPN)."""
+    words = [w for w in _NAME_PARTS.split(_fold(name)) if w]
+    if not text or len(words) < 2:
+        return False
+    body = r"[\s-]+".join(re.escape(w) for w in words)
+    lead = _AR_PREFIX if _ARABIC_LETTER.match(words[0]) else ""
+    return re.search(rf"(?<!\w){lead}{body}(?!\w)", _fold(text)) is not None
+
+
 def indexable(minutes: Minutes, template_spec: TemplateSpec) -> bool:
     """True when this minutes record may be indexed: approved, indexable template, not
     restricted. Drafts, in-review and discarded minutes are never searchable."""

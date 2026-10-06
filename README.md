@@ -405,7 +405,7 @@ modes.
 | `praktika search "query"` / `praktika actions [--owner] [--overdue]` | Search approved minutes; list open actions |
 | `praktika retention run [--dry-run]` / `praktika retention install` | Apply the retention timers now; install the hourly scheduler |
 | `praktika hold set\|clear ID --reason TEXT` | Legal hold: blocks every retention timer for the meeting |
-| `praktika dsar find\|export\|delete --participant NAME` | Data-subject requests |
+| `praktika dsar find\|export\|delete --participant NAME` | Data-subject requests: the participant's meetings by roster name, alias, UPN, speaker, organiser or a full name in the title; `find` shows why each matched |
 | `praktika models pull\|register\|verify` | Mirror, register and hash-verify model weights |
 | `praktika consent-script [--lang en\|ar]` | Print the spoken consent script and the chat notice |
 | `praktika audit verify\|tail` · `praktika config show` · `praktika audio devices\|check` · `praktika eval` | Utilities |

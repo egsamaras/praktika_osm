@@ -30,7 +30,9 @@ def settings(**over: object) -> Settings:
 def test_public_hosts_rejected(field: str, url: str) -> None:
     with pytest.raises(EgressError) as exc:
         settings(**{field: url})
-    assert field in str(exc.value) and url in str(exc.value)
+    host = url.split("://", 1)[1]
+    assert field in str(exc.value) and repr(host) in str(exc.value)
+    assert url not in str(exc.value), "the message names the host, never the URL (credentials)"
     assert isinstance(exc.value, PraktikaError)
 
 
@@ -320,3 +322,27 @@ def test_numba_threading_layer_set_on_import() -> None:
     import praktika.config  # noqa: F401  (import side effect under test)
 
     assert os.environ.get("NUMBA_THREADING_LAYER") == "workqueue"
+
+
+def test_host_matching_keeps_glob_classes_and_compares_ipv6_addresses() -> None:
+    assert host_allowed("llm1.example.test", ["llm[12].example.test"])
+    assert host_allowed("a.example.test", ["[ab].example.test"])
+    assert host_allowed("[fd00::10]", ["fd00:0:0:0:0:0:0:10"])
+    assert host_allowed("[fd00::10]", ["[fd00::10]"])
+    assert not host_allowed("[fd00::11]", ["fd00::10"])
+    assert host_allowed("[fd00::10]", ["*fd00::*"]) and host_allowed("fd00::10", ["fd00::*"])
+
+
+def test_a_url_with_a_password_is_never_printed(tmp_path: Path) -> None:
+    """Configuration errors name the setting and the host, never a value."""
+    from pydantic import ValidationError
+
+    from praktika.cli import context as ctx
+
+    with pytest.raises(EgressError) as info:
+        settings(llm_base_url="https://svc:s3cret@api.example.com")
+    assert "s3cret" not in str(info.value) and "'api.example.com'" in str(info.value)
+    with pytest.raises(ValidationError) as bad:
+        settings(allowed_hosts='["unclosed', llm_base_url="http://127.0.0.1:11434")
+    shown = ctx.describe_invalid(bad.value)
+    assert shown.startswith("allowed_hosts:") and "unclosed" not in shown
