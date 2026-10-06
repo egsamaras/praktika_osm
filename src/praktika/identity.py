@@ -22,10 +22,11 @@ import pwd
 import re
 import subprocess
 import sys
+import threading
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Literal, Protocol
+from typing import Any, Literal, NoReturn, Protocol
 
 import httpx
 from cryptography.exceptions import InvalidSignature
@@ -282,8 +283,8 @@ def _b64url_decode(data: str) -> bytes:
 def _json_segment(segment: str) -> dict[str, Any]:
     try:
         value = json.loads(_b64url_decode(segment))
-    except ValueError as exc:
-        raise IdentityError("token segment is not JSON") from exc
+    except (ValueError, RecursionError):  # deeply nested JSON from an untrusted token
+        raise IdentityError("token segment is not JSON") from None
     if not isinstance(value, dict):
         raise IdentityError("token segment is not an object")
     return value
@@ -298,14 +299,20 @@ def rsa_key_from_jwk(jwk: dict[str, Any]) -> rsa.RSAPublicKey:
     return rsa.RSAPublicNumbers(e=e, n=n).public_key()
 
 
+#: Seconds between two JWKS fetches, so a stream of tokens naming unknown key ids cannot make the
+#: server hammer the identity provider; a rotated key is picked up within this time.
+JWKS_REFETCH_S = 60.0
+
+
 class OidcIdentity:
     """Validate an RS256 bearer JWT against a JWKS document and map groups and app roles to
     Praktika roles (``praktika_groups``).
 
     ``client`` must be an ``httpx.Client`` built by ``Settings.http_client`` so the JWKS fetch is
-    subject to the allow-list. Keys are cached; an unknown ``kid`` triggers one refetch (rotation).
-    ``current(request)`` reads only ``request.headers["authorization"]``; any other header is
-    ignored. Raises ``IdentityError`` on any validation failure.
+    subject to the allow-list. Keys are cached; an unknown ``kid`` triggers a refetch at most
+    once per ``JWKS_REFETCH_S`` (rotation). ``current(request)`` reads only
+    ``request.headers["authorization"]``; any other header is ignored. Raises ``IdentityError``
+    on any validation failure.
     """
 
     def __init__(
@@ -317,26 +324,75 @@ class OidcIdentity:
         *,
         leeway_s: int = 60,
         clock: Callable[[], float] | None = None,
+        monotonic: Callable[[], float] | None = None,
     ) -> None:
         self.issuer, self.audience, self.jwks_url = issuer, audience, jwks_url
         self._client, self._leeway, self._clock = client, leeway_s, clock or time.time
+        #: Times the refetch interval; never steps backwards, unlike the clock for exp and nbf.
+        self._monotonic = monotonic or time.monotonic
         self._keys: dict[str, rsa.RSAPublicKey] = {}
+        self._fetched_at: float | None = None
+        self._last_failure: str | None = None
+        #: One fetch at a time; a request that needs the keys meanwhile waits for its result.
+        self._fetch_lock = threading.Lock()
 
     def _load_keys(self) -> None:
+        """Fetch the signing keys and keep the RSA signing keys among them (an EC key or an
+        encryption key the provider also publishes is skipped, as is a malformed entry).
+
+        A failure reaches the caller only as ``JWKS fetch failed: <reason>`` (the HTTP status,
+        the error type, or a document with no key list), never the JWKS URL: that message is the
+        401 body sent to an unauthenticated caller and the server's access-denied log line, and
+        the HTTP library's own error text names the URL (an internal host, possibly with a user
+        name and password). The full cause goes to the operator log, where any password is
+        masked. Called with ``_fetch_lock`` held."""
+        self._fetched_at = self._monotonic()
         try:
             resp = self._client.get(self.jwks_url)
             resp.raise_for_status()
-            keys = resp.json().get("keys", [])
-        except (httpx.HTTPError, ValueError) as exc:
-            raise IdentityError(f"JWKS fetch failed: {exc}") from exc
-        self._keys = {k["kid"]: rsa_key_from_jwk(k) for k in keys if "kid" in k}
+            document = resp.json()
+        except httpx.HTTPStatusError as exc:
+            self._fail(f"HTTP {exc.response.status_code}", exc)
+        except (
+            httpx.HTTPError,
+            PraktikaError,
+            ValueError,
+        ) as exc:  # EgressError is a PraktikaError
+            self._fail(type(exc).__name__, exc)
+        keys = document.get("keys") if isinstance(document, dict) else None
+        if not isinstance(keys, list):
+            self._fail("no key list in the document", None)
+        found: dict[str, rsa.RSAPublicKey] = {}
+        for jwk in keys:
+            if not isinstance(jwk, dict) or not isinstance(jwk.get("kid"), str):
+                continue
+            if jwk.get("kty") != "RSA" or jwk.get("use", "sig") != "sig":
+                continue
+            try:
+                found[jwk["kid"]] = rsa_key_from_jwk(jwk)
+            except (IdentityError, TypeError, ValueError):
+                log.warning("identity.jwks_key_skipped", kid=jwk["kid"])
+        self._keys, self._last_failure = found, None
+
+    def _fail(self, reason: str, exc: Exception | None) -> NoReturn:
+        self._last_failure = reason
+        log.warning("identity.jwks_fetch_failed", reason=reason, error=str(exc) if exc else None)
+        raise IdentityError(f"JWKS fetch failed: {reason}") from None
 
     def _key(self, kid: str) -> rsa.RSAPublicKey:
         if kid not in self._keys:
-            self._load_keys()
+            with self._fetch_lock:  # a fetch already running answers this request too
+                if kid not in self._keys:
+                    if self._fetch_due():
+                        self._load_keys()
+                    elif self._last_failure is not None:
+                        raise IdentityError(f"JWKS fetch failed: {self._last_failure}")
         if kid not in self._keys:
             raise IdentityError("token key id not in JWKS")
         return self._keys[kid]
+
+    def _fetch_due(self) -> bool:
+        return self._fetched_at is None or self._monotonic() - self._fetched_at >= JWKS_REFETCH_S
 
     def validate(self, token: str) -> dict[str, Any]:
         """Verify signature, ``iss``, ``aud``, ``exp`` (and ``nbf`` if present); return claims."""
@@ -346,7 +402,10 @@ class OidcIdentity:
         header = _json_segment(parts[0])
         if header.get("alg") != "RS256" or not isinstance(header.get("kid"), str):
             raise IdentityError("token must be RS256 with a kid")
-        signing_input = f"{parts[0]}.{parts[1]}".encode("ascii")
+        try:
+            signing_input = f"{parts[0]}.{parts[1]}".encode("ascii")
+        except UnicodeEncodeError:
+            raise IdentityError("token is not base64url") from None
         try:
             self._key(header["kid"]).verify(
                 _b64url_decode(parts[2]), signing_input, padding.PKCS1v15(), hashes.SHA256()

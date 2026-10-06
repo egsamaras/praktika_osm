@@ -279,7 +279,6 @@ scale.
 * Verification of the management-committee "Figures mentioned" list, and its display on the
   review page.
 * A credential for the speech endpoint.
-* A negative cache and minimum refetch interval for the JWKS document.
 * `PRAGMA secure_delete=ON` and a periodic `VACUUM`.
 * Exports under a retention timer.
 * An audit event from the verifier, for prompt-injection detection.

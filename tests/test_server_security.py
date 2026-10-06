@@ -313,3 +313,32 @@ def test_review_page_refuses_a_draft_of_an_older_transcript(env: dict[str, Any])
     client = env["client"](ORGANISER)
     r = client.post(f"/api/minutes/{MID}/approve", json={"reason_code": "accurate"})
     assert r.status_code == 409 and "older transcript" in r.json()["detail"]
+
+
+def test_a_jwks_failure_reaches_the_caller_without_its_url(
+    env: dict[str, Any], capsys: pytest.CaptureFixture[str]
+) -> None:
+    """An unauthenticated caller's 401 never names the JWKS URL, nor does the access-denied log
+    line; the operator log gives the cause with any password masked."""
+    import httpx
+    from helpers_core import Signer
+
+    from praktika.identity import OidcIdentity
+    from praktika.logging import configure_logging
+
+    secret_url = "https://svc:s3cret@login.internal.example.test/keys"
+    client_503 = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(503)))
+    provider = OidcIdentity("https://issuer.example.test", "api://praktika", secret_url, client_503)
+    token = Signer().token({"sub": "x"})
+    try:
+        configure_logging(level="INFO")
+        r = env["client"](provider).get(
+            "/api/meetings", headers={"Authorization": f"Bearer {token}"}
+        )
+        log = capsys.readouterr().err
+    finally:
+        configure_logging(level="WARNING")
+    assert r.status_code == 401 and r.json() == {"detail": "JWKS fetch failed: HTTP 503"}
+    denied = [line for line in log.splitlines() if "access_denied" in line]
+    assert denied and all("login.internal" not in line for line in denied)
+    assert "s3cret" not in log and "jwks_fetch_failed" in log, "the cause, password masked"

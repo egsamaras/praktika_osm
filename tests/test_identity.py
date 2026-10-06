@@ -305,19 +305,41 @@ def test_bare_role_names_only_count_in_the_roles_claim() -> None:
 
 def test_oidc_jwks_fetched_once_and_refetched_on_rotation(signer: Signer) -> None:
     calls: list[str] = []
-    provider = _oidc(signer, calls)
+    shift = [0.0]
+    provider = OidcIdentity(
+        ISSUER, AUDIENCE, JWKS_URL, _client(signer, calls), monotonic=lambda: 1000.0 + shift[0]
+    )
     provider.validate(signer.token(_claims()))
     provider.validate(signer.token(_claims()))
     assert calls == [JWKS_URL]
+    for _ in range(5):  # made-up key ids right after a fetch: no refetch at all
+        with pytest.raises(IdentityError, match="key id"):
+            provider.validate(signer.token(_claims(), kid="made-up"))
+    assert len(calls) == 1, "unknown kids cannot make the server hammer the identity provider"
+    shift[0] = 61.0
     with pytest.raises(IdentityError, match="key id"):
         provider.validate(signer.token(_claims(), kid="new-kid"))
-    assert len(calls) == 2, "an unknown kid triggers exactly one refetch"
+    assert len(calls) == 2, "after JWKS_REFETCH_S an unknown kid triggers exactly one refetch"
 
 
 def test_oidc_jwks_fetch_failure_is_identity_error(signer: Signer) -> None:
-    client = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(503)))
-    with pytest.raises(IdentityError, match="JWKS"):
-        OidcIdentity(ISSUER, AUDIENCE, JWKS_URL, client).validate(signer.token(_claims()))
+    """The message names the HTTP status or the error type, never the JWKS URL: it reaches an
+    unauthenticated caller in the 401 body."""
+    secret_url = "https://svc:s3cret@login.internal.example.test/keys"
+
+    def refuse(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("connection refused", request=request)
+
+    for handler, expected in (
+        (lambda r: httpx.Response(503), "JWKS fetch failed: HTTP 503"),
+        (refuse, "JWKS fetch failed: ConnectError"),
+        (lambda r: httpx.Response(200, text="not json"), "JWKS fetch failed: JSONDecodeError"),
+    ):
+        client = httpx.Client(transport=httpx.MockTransport(handler))
+        with pytest.raises(IdentityError) as info:
+            OidcIdentity(ISSUER, AUDIENCE, secret_url, client).validate(signer.token(_claims()))
+        assert str(info.value) == expected
+        assert "login.internal" not in str(info.value) and info.value.__cause__ is None
 
 
 def test_headers_are_never_trusted(signer: Signer) -> None:
@@ -351,3 +373,134 @@ def test_fake_identity_is_recorded_as_local_in_audit() -> None:
     assert FakeIdentity(source="session").current().audit_source() == "session"
     with pytest.raises(ValueError):
         Identity(user="x", display="x", source="oidc", extra_field=1)  # type: ignore[call-arg]
+
+
+def test_oidc_skips_keys_it_cannot_use(signer: Signer) -> None:
+    """An EC or encryption key, or a malformed entry, published beside the RSA signing key does
+    not stop sign-in."""
+    document = signer.jwks()
+    document["keys"] = [
+        {"kty": "EC", "kid": "ec-1", "crv": "P-256", "x": "AA", "y": "AA"},
+        {**document["keys"][0], "kid": "enc-1", "use": "enc"},
+        {"kty": "RSA", "kid": "broken", "n": 5, "e": "AQAB"},
+        "not a key",
+        *document["keys"],
+    ]
+    client = httpx.Client(
+        transport=httpx.MockTransport(lambda r: httpx.Response(200, json=document))
+    )
+    claims = OidcIdentity(ISSUER, AUDIENCE, JWKS_URL, client).validate(signer.token(_claims()))
+    assert claims["sub"] == "abc123"
+
+
+def test_oidc_refuses_malformed_input_with_an_identity_error(signer: Signer) -> None:
+    """Never a 500: a malformed JWKS document or a token with a non-ASCII byte is refused."""
+    for body in ([1, 2], {"keys": "x"}, "null"):
+        payload = body if isinstance(body, str) else None
+        handler = (
+            (lambda r, b=body: httpx.Response(200, json=b))
+            if payload is None
+            else (lambda r: httpx.Response(200, text="null"))
+        )
+        provider = OidcIdentity(
+            ISSUER, AUDIENCE, JWKS_URL, httpx.Client(transport=httpx.MockTransport(handler))
+        )
+        with pytest.raises(IdentityError, match="JWKS fetch failed: no key list"):
+            provider.validate(signer.token(_claims()))
+    header = signer.token(_claims()).split(".")[0]
+    with pytest.raises(IdentityError, match="base64url"):
+        _oidc(signer).validate(f"{header}.\u00fc.c")
+
+
+def test_oidc_reports_an_allow_list_refusal_as_a_failed_fetch(signer: Signer) -> None:
+    """The allow-list refusal names the host and the whole list; the caller must not see it."""
+    from praktika.config import AllowListTransport
+
+    client = httpx.Client(transport=AllowListTransport(["login.example.test"]))  # not 127.0.0.1
+    provider = OidcIdentity(ISSUER, AUDIENCE, JWKS_URL, client)
+    with pytest.raises(IdentityError) as info:
+        provider.validate(signer.token(_claims()))
+    assert str(info.value) == "JWKS fetch failed: EgressError"
+    with pytest.raises(IdentityError, match="JWKS fetch failed: EgressError"):
+        provider.validate(signer.token(_claims()))  # within the refetch interval: same answer
+
+
+def test_oidc_remembers_a_failed_fetch_and_ignores_wall_clock_steps(signer: Signer) -> None:
+    """A failed fetch is not retried within JWKS_REFETCH_S, and the interval is timed with a
+    clock that never steps back (a backwards step of the wall clock cannot block sign-in)."""
+    calls: list[int] = []
+    tick = [0.0]
+    answers = [503, 200]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(1)
+        status = answers.pop(0) if answers else 200
+        return (
+            httpx.Response(status, json=signer.jwks()) if status == 200 else httpx.Response(status)
+        )
+
+    provider = OidcIdentity(
+        ISSUER,
+        AUDIENCE,
+        JWKS_URL,
+        httpx.Client(transport=httpx.MockTransport(handler)),
+        clock=lambda: time.time() - 1800,  # the wall clock has just stepped back 30 minutes
+        monotonic=lambda: tick[0],
+    )
+    token = signer.token(_claims(exp=int(time.time()) - 1800 + 600, nbf=int(time.time()) - 1810))
+    for _ in range(3):
+        with pytest.raises(IdentityError, match="JWKS fetch failed: HTTP 503"):
+            provider.validate(token)
+    assert len(calls) == 1, "remembered, not retried, within the interval"
+    tick[0] = 61.0
+    assert provider.validate(token)["sub"] == "abc123"
+    assert len(calls) == 2
+
+
+def test_oidc_answers_concurrent_requests_from_one_fetch(signer: Signer) -> None:
+    """Requests that arrive while the keys are being fetched wait for that fetch instead of
+    being refused (the review page sends two requests at once on load)."""
+    import threading
+
+    calls: list[int] = []
+    started = threading.Event()
+
+    def slow(request: httpx.Request) -> httpx.Response:
+        calls.append(1)
+        started.set()
+        time.sleep(0.2)
+        return httpx.Response(200, json=signer.jwks())
+
+    provider = OidcIdentity(
+        ISSUER, AUDIENCE, JWKS_URL, httpx.Client(transport=httpx.MockTransport(slow))
+    )
+    token = signer.token(_claims())
+    results: list[object] = []
+
+    def sign_in() -> None:
+        try:
+            results.append(provider.validate(token)["sub"])
+        except IdentityError as exc:
+            results.append(exc)
+
+    threads = [threading.Thread(target=sign_in) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert results == ["abc123"] * 8 and len(calls) == 1
+
+
+def test_oidc_refuses_a_deeply_nested_token_and_an_encryption_key(signer: Signer) -> None:
+    from helpers_core import b64url
+
+    nested = b64url(("[" * 20000 + "]" * 20000).encode())
+    with pytest.raises(IdentityError, match="not JSON"):
+        _oidc(signer).validate(f"{nested}.e30.c")
+    document = signer.jwks()
+    document["keys"][0]["use"] = "enc"  # an RSA key published for encryption never verifies
+    client = httpx.Client(
+        transport=httpx.MockTransport(lambda r: httpx.Response(200, json=document))
+    )
+    with pytest.raises(IdentityError, match="key id"):
+        OidcIdentity(ISSUER, AUDIENCE, JWKS_URL, client).validate(signer.token(_claims()))

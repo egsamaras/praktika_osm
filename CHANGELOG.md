@@ -14,6 +14,12 @@ All notable changes to this project are recorded here. The format follows
 * `praktika dsar find|export|delete` also match a meeting's organiser (UPN) and a full name of two
   words or more in its title (as whole words; a single word such as "May" never matches a title).
   `dsar find`, and the confirmation of `dsar delete`, show why each meeting matched.
+* An unknown key id in a token triggers at most one JWKS fetch a minute (timed with a clock that
+  never steps back), and a failed fetch is remembered for that minute, so a stream of made-up key
+  ids can no longer make the server hammer the identity provider. A rotated key is picked up
+  within the minute.
+* An RSA key the identity provider publishes for encryption (`"use": "enc"`) no longer verifies
+  tokens; only signing keys do.
 * `glossary.load` refuses more single-word misrenderings: Q1 to Q4, Dale, Del, Jenny, Pratik,
   Pratika, Practice, Practices, Practical, Team's and Whisperer. A glossary of your own that lists
   any of them stops ingest with an error until you replace it with a multi-word pattern; the
@@ -40,6 +46,16 @@ All notable changes to this project are recorded here. The format follows
   user name and password in it, and at `--log-level INFO` every command logged each HTTP
   request's full URL; the user name and password of any URL are now replaced by `***` in their
   output and in every log line.
+* When the review server could not fetch the identity provider's signing keys, the 401 sent to the
+  caller, and the access-denied log line, named the JWKS URL with any user name and password in
+  it; both now give only a short reason (the HTTP status, the error type, or a document with no
+  key list), and the full cause
+  goes to the operator log with any password masked. A JWKS fetch the allow-list refused gave a
+  409 naming the host and the whole allow-list; it is now a 401 like any other failed fetch.
+* Sign-in failed for every token when the identity provider also published a key that is not an
+  RSA key (an EC key, for example); such keys are now skipped. A malformed JWKS document, or a
+  token with a non-ASCII byte or deeply nested JSON, gave an unaudited 500; all are now refused
+  with a 401 and audited.
 * An egress error printed the whole URL of the setting, including any password in it; it now
   names the setting and the host. A setting that fails validation is reported by name and reason,
   without the value given,
